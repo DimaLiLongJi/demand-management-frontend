@@ -1,0 +1,28 @@
+<div class="module-creator-container">
+  <nz-modal
+    [(nzVisible)]="modalVisible"
+    nzMask="true"
+    nzZIndex="1001"
+    nzTitle="新增模块"
+    nzMaskClosable="false"
+    (nzOnCancel)="handleCancel()"
+    (nzOnOk)="addModule()"
+    (nzAfterClose)="afterClose()"
+    [nzOkLoading]="isOkLoading"
+  >
+  <form nz-form [formGroup]="validateForm">
+    <nz-form-item class="ant-form-item ant-row">
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="name">模块名</nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="模块名必填">
+        <input nz-input id="name" formControlName="name" placeHolder="请填写模块名" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="ant-form-item ant-row">
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="icon">图标名</nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="图标名必填">
+        <input nz-input id="icon" formControlName="icon" placeHolder="请填写图标名" />
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+  </nz-modal>
+</div>

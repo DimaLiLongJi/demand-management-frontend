@@ -1,0 +1,229 @@
+<div class="demand-editor-container">
+  <nz-modal
+    [(nzVisible)]="modalVisible"
+    nzMask="true"
+    nzZIndex="1001"
+    nzTitle="需求详情"
+    nzMaskClosable="false"
+    (nzAfterOpen)="afterOpen()"
+    (nzAfterClose)="afterClose()"
+    (nzOnCancel)="handleCancel()"
+    nzClassName="demand-creator-modal"
+    [nzStyle]="{ top: '20px' }"
+    [nzOkText]="null"
+    [nzCancelText]="null"
+  >
+    <form nz-form [formGroup]="validateForm">
+      <nz-form-item class="ant-form-item ant-row">
+        <nz-form-label [nzSm]="5" [nzXs]="12" nzRequired nzFor="name">需求名</nz-form-label>
+        <nz-form-control [nzSm]="6" [nzXs]="12" nzErrorTip="需求名必填">
+          <input nz-input id="name" formControlName="name" placeHolder="请填写需求名" />
+          <button nz-button nzType="primary" *ngIf="!changeControll.name" (click)="change('name')">修改需求名</button>
+          <button nz-button nzType="danger" *ngIf="changeControll.name" (click)="confirm('name')">确定修改</button>
+        </nz-form-control>
+        <nz-form-label [nzSm]="5" [nzXs]="12" nzRequired nzFor="expectDate">期望完成时间</nz-form-label>
+        <nz-form-control [nzSm]="6" [nzXs]="12" nzErrorTip="期望完成时间必选">
+          <nz-date-picker	[nzShowToday]="false" id="expectDate" formControlName="expectDate" ></nz-date-picker>
+          <button nz-button nzType="primary" *ngIf="!changeControll.expectDate" (click)="change('expectDate')">修改期望完成时间</button>
+          <button nz-button nzType="danger" *ngIf="changeControll.expectDate" (click)="confirm('expectDate')">确定修改</button>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item class="ant-form-item ant-row">
+        <nz-form-label [nzSm]="5" [nzXs]="12" nzRequired nzFor="demandType">需求类型</nz-form-label>
+        <nz-form-control [nzSm]="6" [nzXs]="12" nzErrorTip="需求类型必选">
+          <nz-select nzPlaceHolder="请选择需求状态" formControlName="demandType" (ngModelChange)="demandTypeChange($event)">
+            <nz-option [(nzDisabled)]="demandType.deleteDate" *ngFor="let demandType of demandTypeList" [(nzLabel)]="demandType.name" [(nzValue)]="demandType.id"></nz-option>
+          </nz-select>
+          <button nz-button nzType="primary" *ngIf="!changeControll.demandType" (click)="change('demandType')">修改需求类型</button>
+          <button nz-button nzType="danger" *ngIf="changeControll.demandType" (click)="confirm('demandType')">确定修改</button>
+        </nz-form-control>
+        <nz-form-label [nzSm]="5" [nzXs]="12" nzRequired nzFor="demandStatus">需求状态</nz-form-label>
+        <nz-form-control [nzSm]="6" [nzXs]="12" nzErrorTip="需求状态必选">
+          <nz-select formControlName="demandStatus">
+            <nz-option nzPlaceHolder="请选择需求状态" [(nzDisabled)]="demandStatus.deleteDate" *ngFor="let demandStatus of demandStatusList" [(nzLabel)]="demandStatus.name" [(nzValue)]="demandStatus.id"></nz-option>
+          </nz-select>
+          <button nz-button nzType="primary" *ngIf="!changeControll.demandStatus" (click)="change('demandStatus')">修改需求状态</button>
+          <button nz-button nzType="danger" *ngIf="changeControll.demandStatus" (click)="confirm('demandStatus')">确定修改</button>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item class="ant-form-item ant-row">
+        <nz-form-label [nzSm]="5" [nzXs]="12" nzFor="proposerIds">需求提出人</nz-form-label>
+        <nz-form-control [nzSm]="6" [nzXs]="12">
+          <nz-select
+            nzMode="multiple"
+            nzPlaceHolder="请选择需求提出人"
+            formControlName="proposerIds"
+          >
+            <nz-option [nzDisabled]="canDisabled(user.id, user.deleteDate)"  *ngFor="let user of userList" [(nzLabel)]="user.name" [(nzValue)]="user.id"></nz-option>
+          </nz-select>
+          <button nz-button nzType="primary" *ngIf="!changeControll.proposerIds" (click)="change('proposerIds')">修改需求人</button>
+          <button nz-button nzType="danger" *ngIf="changeControll.proposerIds" (click)="confirm('proposerIds')">确定修改</button>
+        </nz-form-control>
+        <nz-form-label [nzSm]="5" [nzXs]="12" nzFor="brokerIds">需求对接人</nz-form-label>
+        <nz-form-control [nzSm]="6" [nzXs]="12">
+          <nz-select
+            nzMode="multiple"
+            nzPlaceHolder="请选择对接人"
+            formControlName="brokerIds"
+          >
+            <nz-option [nzDisabled]="canDisabled(user.id, user.deleteDate)" *ngFor="let user of userList" [(nzLabel)]="user.name" [(nzValue)]="user.id"></nz-option>
+          </nz-select>
+          <button nz-button nzType="primary" *ngIf="!changeControll.brokerIds" (click)="change('brokerIds')">修改需求对接人</button>
+          <button nz-button nzType="danger" *ngIf="changeControll.brokerIds" (click)="confirm('brokerIds')">确定修改</button>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item class="ant-form-item ant-row">
+        <nz-form-label [nzSm]="5" [nzXs]="12" nzFor="developerIds">开发者</nz-form-label>
+        <nz-form-control [nzSm]="6" [nzXs]="12">
+          <nz-select
+            nzMode="multiple"
+            nzPlaceHolder="请选择开发者"
+            formControlName="developerIds"
+          >
+            <nz-option [nzDisabled]="canDisabled(user.id, user.deleteDate)" *ngFor="let user of userList" [(nzLabel)]="user.name" [(nzValue)]="user.id"></nz-option>
+          </nz-select>
+          <button nz-button nzType="primary" *ngIf="!changeControll.developerIds" (click)="change('developerIds')">修改开发者</button>
+          <button nz-button nzType="danger" *ngIf="changeControll.developerIds" (click)="confirm('developerIds')">确定修改</button>
+        </nz-form-control>
+        <nz-form-label [nzSm]="5" [nzXs]="12" nzFor="devopsIds">运维或其他</nz-form-label>
+        <nz-form-control [nzSm]="6" [nzXs]="12">
+          <nz-select
+            nzMode="multiple"
+            nzPlaceHolder="请选择运维或其他"
+            formControlName="devopsIds"
+          >
+          <nz-option [nzDisabled]="canDisabled(user.id, user.deleteDate)" *ngFor="let user of userList" [(nzLabel)]="user.name" [(nzValue)]="user.id"></nz-option>
+          </nz-select>
+          <button nz-button nzType="primary" *ngIf="!changeControll.devopsIds" (click)="change('devopsIds')">修改运维或其他</button>
+          <button nz-button nzType="danger" *ngIf="changeControll.devopsIds" (click)="confirm('devopsIds')">确定修改</button>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item class="ant-form-item ant-row">
+        <nz-form-label [nzSm]="5" [nzXs]="12" nzRequired nzFor="manDay">开发人天</nz-form-label>
+        <nz-form-control [nzSm]="6" [nzXs]="12" nzErrorTip="开发人天必填">
+          <input placeHolder="请填写开发人天" nz-input min="0" type="number" id="manDay" formControlName="manDay" />
+          <button nz-button nzType="primary" *ngIf="!changeControll.manDay" (click)="change('manDay')">修改开发人天</button>
+          <button nz-button nzType="danger" *ngIf="changeControll.manDay" (click)="confirm('manDay')">确定修改</button>
+        </nz-form-control>
+        <nz-form-label [nzSm]="5" [nzXs]="12" nzFor="url">线上链接</nz-form-label>
+        <nz-form-control [nzSm]="6" [nzXs]="12">
+          <input placeHolder="请填写线上链接" nz-input id="url" formControlName="url" />
+          <button nz-button nzType="primary" *ngIf="!changeControll.url" (click)="change('url')">修改线上链接</button>
+          <button nz-button nzType="danger" *ngIf="changeControll.url" (click)="confirm('url')">确定修改</button>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item class="ant-form-item ant-row">
+        <nz-form-label [nzSm]="5" [nzXs]="12" nzFor="scheduleStartDate">排期开始时间</nz-form-label>
+        <nz-form-control [nzSm]="6" [nzXs]="12">
+          <nz-date-picker	[nzShowToday]="false" id="scheduleStartDate" nzPlaceHolder="请选择排期开始时间" formControlName="scheduleStartDate" ></nz-date-picker>
+          <button nz-button nzType="primary" *ngIf="!changeControll.scheduleStartDate" (click)="change('scheduleStartDate')">修改排期开始时间</button>
+          <button nz-button nzType="danger" *ngIf="changeControll.scheduleStartDate" (click)="confirm('scheduleStartDate')">确定修改</button>
+        </nz-form-control>
+        <nz-form-label [nzSm]="5" [nzXs]="12" nzFor="scheduleEndDate">排期结束时间</nz-form-label>
+        <nz-form-control [nzSm]="6" [nzXs]="12">
+          <nz-date-picker [nzShowToday]="false" nzPlaceHolder="请选择排期结束时间"	id="scheduleEndDate" formControlName="scheduleEndDate" ></nz-date-picker>
+          <button nz-button nzType="primary" *ngIf="!changeControll.scheduleEndDate" (click)="change('scheduleEndDate')">修改排期结束时间</button>
+          <button nz-button nzType="danger" *ngIf="changeControll.scheduleEndDate" (click)="confirm('scheduleEndDate')">确定修改</button>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item class="ant-form-item ant-row">
+        <nz-form-label [nzSm]="4" [nzXs]="24">附件</nz-form-label>
+        <nz-form-control [nzSm]="18" [nzXs]="24">
+          <nz-upload
+            [nzAction]="rootUrl + '/api/demand/addFile'"
+            [nzData]="{demandId: demandId}"
+            id="fileList"
+            [(nzFileList)]="uploadFileList"
+            (nzChange)="upload($event)"
+            [nzRemove]="removeFile"
+            [nzDisabled]="canUplpadDisabled()"
+          >
+            <button nz-button><i nz-icon nzType="upload"></i><span>上传</span></button>
+          </nz-upload>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item class="ant-form-item ant-row">
+        <nz-form-label [nzSm]="4" [nzXs]="24">审核状态</nz-form-label>
+        <nz-form-control [nzSm]="18" [nzXs]="24">
+          <span *ngIf="demandDetail" [ngStyle]="{'color':demandDetail.isPending === '2' ? '#e62412' : 'rgba(0, 0, 0, 0.85)'}">{{demandDetail.isPending | demandIsPending}}</span>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item class="ant-form-item ant-row">
+        <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="detail">需求详情</nz-form-label>
+        <nz-form-control [nzSm]="18" [nzXs]="24">
+          <textarea nz-input rows="8" id="detail" formControlName="detail" placeHolder="请填写需求详情"></textarea>
+          <button nz-button nzType="primary" *ngIf="!changeControll.detail" (click)="change('detail')">修改需求详情</button>
+          <button nz-button nzType="danger" *ngIf="changeControll.detail" (click)="confirm('detail')">确定修改</button>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item class="ant-form-item ant-row">
+        <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="comment">审批备注</nz-form-label>
+        <nz-form-control [nzSm]="18" [nzXs]="24">
+          <textarea nz-input rows="8" id="comment" formControlName="comment" placeHolder="请填写审批备注"></textarea>
+          <button nz-button nzType="primary" *ngIf="!changeControll.comment" (click)="change('comment')">修改审批备注</button>
+          <button nz-button nzType="danger" *ngIf="changeControll.comment" (click)="confirm('comment')">确定修改</button>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+    <div class="ant-form-item ant-row" style="padding: 0 20px;">
+      <span class="select-title">开发进度（完成勾起）：</span>
+      <nz-checkbox-wrapper style="width: 100%;">
+        <div nz-row *ngFor="let progress of developerProgress">
+          <div nz-col nzSpan="24" style="margin: 5px 0;">
+            <label style="width: 15% !important;" nz-checkbox [nzDisabled]="canDisabled(progress.userId, null, progress.userId)" [nzValue]="progress.id" [(ngModel)]="progress.checked" (ngModelChange)="confirmProgress(progress)">{{progress.label}}</label>
+            <nz-range-picker
+              style="width: 69% !important;"
+              [(ngModel)]="progress.scheduleDate"
+              [nzDisabled]="canDisabled(progress.userId, null, progress.userId)"
+              [nzPlaceHolder]="['选择排期开始时间','选择排期结束时间']"
+              (ngModelChange)="progressScheduleDateChange($event, progress.id)"
+            ></nz-range-picker>
+            <button [disabled]="canDisabled(progress.userId, null, progress.userId) || progress.isAdding" style="width: 15%; margin-left: 1%;" nz-button nzType="primary" (click)="progress.isAdding=true">新增检查点</button>
+          </div>
+          <div nz-col nzSpan="24" *ngIf="progress.isAdding" style="margin: 5px 0;padding: 0 10px;" >
+            <textarea nz-input style="width: 65% !important;" placeholder="需求功能检查点" [(ngModel)]="progress.addValue" nzAutosize></textarea>
+            <button style="width: 15%; margin-left: 1%;" nz-button nzType="primary" (click)="createDemandNode(progress)">新增检查点</button>
+            <button (click)="clearAddNode(progress)" style="width: 15%; margin-left: 1%;" nz-button nzType="danger">取消</button>
+          </div>
+          <div nz-col nzSpan="24" style="margin: 5px 0;padding: 0 10px;" *ngFor="let demandNode of progress.demandNodeList">
+            <label style="width: 5% !important;" nz-checkbox [nzDisabled]="canDisabled(progress.userId, null, progress.userId)" [nzValue]="demandNode.id" [(ngModel)]="demandNode.checked" (ngModelChange)="confirmDemandNode(demandNode)"></label>
+            <textarea nz-input style="width: 78% !important;" [(disabled)]="!demandNode.isEditing" *ngIf="!demandNode.isEditing" [ngModel]="demandNode.detail" placeholder="需求功能检查点" nzAutosize></textarea>
+            <button [disabled]="canDisabled(progress.userId, null, progress.userId)" (click)="demandNode.isEditing = true" *ngIf="!demandNode.isEditing" style="width: 15%; margin-left: 1%;" nz-button nzType="primary">修改检查点</button>
+            <textarea nz-input style="width: 78% !important;" [(disabled)]="!demandNode.isEditing" *ngIf="demandNode.isEditing" [(ngModel)]="demandNode.editValue" placeholder="需求功能检查点" nzAutosize></textarea>
+            <button [disabled]="canDisabled(progress.userId, null, progress.userId)" (click)="updateDemandNode(demandNode)" *ngIf="demandNode.isEditing" style="width: 15%; margin-left: 1%;" nz-button nzType="danger">确认检查点</button>
+          </div>
+        </div>
+      </nz-checkbox-wrapper>
+    </div>
+    <div class="ant-form-item ant-row" style="padding: 0 20px;">
+      <span class="select-title">运维或其他进度（完成勾起）：</span>
+      <nz-checkbox-wrapper style="width: 100%;">
+        <div nz-row *ngFor="let progress of devopsProgress">
+          <div nz-col nzSpan="24" style="margin: 5px 0;">
+            <label style="width: 15% !important;" nz-checkbox [nzDisabled]="canDisabled(progress.userId, null, progress.userId)" [nzValue]="progress.id" [(ngModel)]="progress.checked" (ngModelChange)="confirmProgress(progress)">{{progress.label}}</label>
+            <nz-range-picker
+              style="width: 69% !important;"
+              [(ngModel)]="progress.scheduleDate"
+              [nzDisabled]="canDisabled(progress.userId, null, progress.userId)"
+              [nzPlaceHolder]="['选择排期开始时间','选择排期结束时间']"
+              (ngModelChange)="progressScheduleDateChange($event, progress.id)"
+            ></nz-range-picker>
+            <button [disabled]="canDisabled(progress.userId, null, progress.userId) || progress.isAdding" style="width: 15%; margin-left: 1%;" nz-button nzType="primary" (click)="progress.isAdding=true">新增检查点</button>
+          </div>
+          <div nz-col nzSpan="24" *ngIf="progress.isAdding" style="margin: 5px 0;padding: 0 10px;" >
+            <textarea nz-input style="width: 65% !important;" placeholder="需求功能检查点" [(ngModel)]="progress.addValue" nzAutosize></textarea>
+            <button style="width: 15%; margin-left: 1%;" nz-button nzType="primary" (click)="createDemandNode(progress)">新增检查点</button>
+            <button (click)="clearAddNode(progress)" style="width: 15%; margin-left: 1%;" nz-button nzType="danger">取消</button>
+          </div>
+          <div nz-col nzSpan="24" style="margin: 5px 0;padding: 0 10px;" *ngFor="let demandNode of progress.demandNodeList">
+            <label style="width: 5% !important;" nz-checkbox [nzDisabled]="canDisabled(progress.userId, null, progress.userId)" [nzValue]="demandNode.id" [(ngModel)]="demandNode.checked" (ngModelChange)="confirmDemandNode(demandNode)"></label>
+            <textarea nz-input style="width: 78% !important;" [(disabled)]="!demandNode.isEditing" *ngIf="!demandNode.isEditing" [ngModel]="demandNode.detail" placeholder="需求功能检查点" nzAutosize></textarea>
+            <button [disabled]="canDisabled(progress.userId, null, progress.userId)" (click)="demandNode.isEditing = true" *ngIf="!demandNode.isEditing" style="width: 15%; margin-left: 1%;" nz-button nzType="primary">修改检查点</button>
+            <textarea nz-input style="width: 78% !important;" [(disabled)]="!demandNode.isEditing" *ngIf="demandNode.isEditing" [(ngModel)]="demandNode.editValue" placeholder="需求功能检查点" nzAutosize></textarea>
+            <button [disabled]="canDisabled(progress.userId, null, progress.userId)" (click)="updateDemandNode(demandNode)" *ngIf="demandNode.isEditing" style="width: 15%; margin-left: 1%;" nz-button nzType="danger">确认检查点</button>
+          </div>
+        </div>
+      </nz-checkbox-wrapper>
+    </div>
+  </nz-modal>
+</div>

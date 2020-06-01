@@ -1,0 +1,52 @@
+<div class="permission-creator-container">
+  <nz-modal
+    [(nzVisible)]="modalVisible"
+    nzMask="true"
+    nzZIndex="1001"
+    [nzTitle]="modalTitle"
+    nzMaskClosable="false"
+    (nzOnCancel)="handleCancel()"
+    (nzOnOk)="handleOnOk()"
+    (nzAfterOpen)="afterOpen()"
+    (nzAfterClose)="afterClose()"
+    [nzOkLoading]="isOkLoading"
+  >
+  <form nz-form [formGroup]="validateForm">
+    <nz-form-item class="ant-form-item ant-row">
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="name">权限名</nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="权限名必填">
+        <input nz-input id="name" formControlName="name" placeHolder="请填写权限" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="ant-form-item ant-row">
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="type">类型</nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="类型必选">
+        <nz-select formControlName="type" (ngModelChange)="typeChange($event)" nzPlaceHolder="请选择类型">
+          <nz-option nzLabel="访问权限" nzValue="1"></nz-option>
+          <nz-option nzLabel="操作权限" nzValue="2"></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="ant-form-item ant-row" *ngIf="showRoute">
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="route">访问路径</nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="访问路径必填">
+        <input nz-input id="route" formControlName="route" placeHolder="请填写访问路径"/>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="ant-form-item ant-row" *ngIf="!showRoute">
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="operating">操作名</nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="操作名必填">
+        <input nz-input id="operating" formControlName="operating" placeHolder="请填写操作名"/>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="ant-form-item ant-row">
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="module">所属模块</nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="模块必选">
+        <nz-select formControlName="module" placeHolder="请选择所属模块">
+          <nz-option [(nzDisabled)]="module.deleteDate" *ngFor="let module of moduleList" [(nzLabel)]="module.name" [(nzValue)]="module.id"></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+  </nz-modal>
+</div>

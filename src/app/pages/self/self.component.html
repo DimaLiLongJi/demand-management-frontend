@@ -1,0 +1,59 @@
+<div class="self-container sub-page-container">
+  <nz-page-header nzTitle="个人信息"></nz-page-header>
+  <form nz-form [formGroup]="validateForm">
+    <nz-form-item class="ant-form-item ant-row">
+      <nz-form-label [nzSm]="4" [nzXs]="12" nzRequired nzFor="name">姓名</nz-form-label>
+      <nz-form-control [nzSm]="5" [nzXs]="12" nzErrorTip="姓名必填">
+        <input nz-input id="name" formControlName="name" />
+        <button nz-button nzType="primary" *ngIf="!changeControll.name" (click)="change('name')">修改姓名</button>
+        <button nz-button nzType="danger" *ngIf="changeControll.name" (click)="confirm('name')">确定修改</button>
+      </nz-form-control>
+      <nz-form-label [nzSm]="4" [nzXs]="12" nzRequired>密码</nz-form-label>
+      <nz-form-control [nzSm]="5" [nzXs]="12" nzErrorTip="密码必填">
+        <input nz-input id="password" formControlName="password" />
+        <button nz-button nzType="primary" *ngIf="!changeControll.password" (click)="change('password')">修改密码</button>
+        <button nz-button nzType="danger" *ngIf="changeControll.password" (click)="confirm('password')">确定修改</button>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="ant-form-item ant-row">
+      <nz-form-label [nzSm]="4" [nzXs]="12" nzRequired nzFor="mobile">手机号</nz-form-label>
+      <nz-form-control [nzSm]="5" [nzXs]="12" nzErrorTip="手机号必填">
+        <input nz-input type="tel" id="mobile" formControlName="mobile" />
+        <button nz-button nzType="primary" *ngIf="!changeControll.mobile" (click)="change('mobile')">修改手机号</button>
+        <button nz-button nzType="danger" *ngIf="changeControll.mobile" (click)="confirm('mobile')">确定修改</button>
+
+      </nz-form-control>
+      <nz-form-label [nzSm]="4" [nzXs]="12" nzRequired nzFor="email">邮箱</nz-form-label>
+      <nz-form-control [nzSm]="5" [nzXs]="12" nzErrorTip="邮箱必填">
+        <input nz-input id="email" formControlName="email" />
+        <button nz-button nzType="primary" *ngIf="!changeControll.email" (click)="change('email')">修改邮箱</button>
+        <button nz-button nzType="danger" *ngIf="changeControll.email" (click)="confirm('email')">确定修改</button>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="ant-form-item ant-row">
+      <nz-form-label [nzSm]="4" [nzXs]="12" nzFor="role">角色选择</nz-form-label>
+      <nz-form-control [nzSm]="5" [nzXs]="12" nzErrorTip="模块必选">
+        <nz-select formControlName="role">
+          <nz-option [(nzDisabled)]="role.deleteDate" *ngFor="let role of roleList" [(nzLabel)]="role.name" [(nzValue)]="role.id"></nz-option>
+        </nz-select>
+        <button nz-button nzType="primary" *ngIf="!changeControll.role" (click)="changeWithPermission('role')">修改角色</button>
+        <button nz-button nzType="danger" *ngIf="changeControll.role" (click)="confirm('role')">确定修改</button>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="ant-form-item ant-row">
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="permissionIds">权限选择</nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <nz-select
+          nzMode="multiple"
+          nzPlaceHolder="选择权限"
+          formControlName="permissionIds"
+        >
+          <nz-option [(nzDisabled)]="permission.deleteDate" *ngFor="let permission of permissionList" [(nzLabel)]="permission.name" [(nzValue)]="permission.id"></nz-option>
+        </nz-select>
+        <button nz-button nzType="primary" *ngIf="!changeControll.permissionIds" (click)="changeWithPermission('permissionIds')">修改权限</button>
+        <button nz-button nzType="danger" *ngIf="changeControll.permissionIds" (click)="confirm('permissionIds')">确定修改</button>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+  <ng-template #tagPlaceHolder let-permissionIds>还有其他{{ permissionIds.length }}个</ng-template>
+</div>

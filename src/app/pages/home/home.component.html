@@ -1,0 +1,46 @@
+<nz-layout class="app-layout">
+  <nz-sider
+    class="menu-sidebar"
+    nzCollapsible
+    nzWidth="256px"
+    nzBreakpoint="md"
+    [(nzCollapsed)]="isCollapsed"
+    [nzTrigger]="null">
+    <div class="sidebar-logo">
+      <a [href]="rootUrl + '/pages/'" target="_blank"> 
+        <img [src]="rootUrl + '/static/logo.jpeg'" alt="logo">
+        <h1>需求管理平台</h1>
+      </a>
+    </div>
+    <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
+      <li nz-submenu nzOpen *ngFor="let menu of menuList" [nzTitle]="menu.name" [nzIcon]="menu.icon">
+          <ul>
+            <ng-container *ngFor="let childMenu of menu.permissionList">
+              <li nz-menu-item nzMatchRouter *ngIf="childMenu.route">
+                <ng-container *ngIf="childMenu.route">
+                  <a [routerLink]="childMenu.route">{{childMenu.name}}</a>
+                </ng-container>
+              </li>
+            </ng-container>
+          </ul>
+        </li>
+    </ul>
+  </nz-sider>
+  <nz-layout>
+    <nz-header>
+      <div class="app-header">
+        <span class="header-trigger" (click)="isCollapsed = !isCollapsed">
+          <i class="trigger" nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"></i>
+        </span>
+        <span class="header-trigger" (click)="showLogout()">
+          <i class="trigger" nz-icon nzType="logout" nzTheme="outline"></i>
+        </span>
+      </div>
+    </nz-header>
+    <nz-content>
+      <div class="inner-content">
+        <router-outlet></router-outlet>
+      </div>
+    </nz-content>
+  </nz-layout>
+</nz-layout>

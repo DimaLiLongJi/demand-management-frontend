@@ -1,0 +1,127 @@
+<div class="demand-creator-container">
+  <nz-modal
+    [(nzVisible)]="modalVisible"
+    nzMask="true"
+    nzZIndex="1001"
+    nzTitle="新增需求"
+    nzMaskClosable="false"
+    (nzOnCancel)="handleCancel()"
+    (nzOnOk)="handleOnOk()"
+    (nzAfterOpen)="afterOpen()"
+    (nzAfterClose)="afterClose()"
+    [nzOkLoading]="isOkLoading"
+    nzClassName="demand-creator-modal"
+    [nzStyle]="{ top: '20px' }"
+  >
+  <form nz-form [formGroup]="validateForm">
+    <nz-form-item class="ant-form-item ant-row">
+      <nz-form-label [nzSm]="5" [nzXs]="12" nzRequired nzFor="name">需求名</nz-form-label>
+      <nz-form-control [nzSm]="6" [nzXs]="12" nzErrorTip="需求名必填">
+        <input nz-input id="name" formControlName="name" placeHolder="请填写需求名" />
+      </nz-form-control>
+      <nz-form-label [nzSm]="5" [nzXs]="12" nzRequired nzFor="expectDate">期望完成时间</nz-form-label>
+      <nz-form-control [nzSm]="6" [nzXs]="12" nzErrorTip="期望完成时间必选">
+        <nz-date-picker	[nzShowToday]="false" id="expectDate" formControlName="expectDate" ></nz-date-picker>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="ant-form-item ant-row">
+      <nz-form-label [nzSm]="5" [nzXs]="12" nzRequired nzFor="demandType">需求类型</nz-form-label>
+      <nz-form-control [nzSm]="6" [nzXs]="12" nzErrorTip="需求类型必选">
+        <nz-select nzPlaceHolder="请选择需求类型" formControlName="demandType" (ngModelChange)="demandTypeChange($event)">
+          <nz-option [(nzDisabled)]="demandType.deleteDate" *ngFor="let demandType of demandTypeList" [(nzLabel)]="demandType.name" [(nzValue)]="demandType.id"></nz-option>
+        </nz-select>
+      </nz-form-control>
+      <nz-form-label [nzSm]="5" [nzXs]="12" nzRequired nzFor="demandStatus">需求状态</nz-form-label>
+      <nz-form-control [nzSm]="6" [nzXs]="12" nzErrorTip="需求状态必选">
+        <nz-select nzPlaceHolder="请选择需求状态" formControlName="demandStatus">
+          <nz-option [(nzDisabled)]="demandStatus.deleteDate" *ngFor="let demandStatus of demandStatusList" [(nzLabel)]="demandStatus.name" [(nzValue)]="demandStatus.id"></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="ant-form-item ant-row">
+      <nz-form-label [nzSm]="5" [nzXs]="12" nzFor="proposerIds">需求提出人</nz-form-label>
+      <nz-form-control [nzSm]="6" [nzXs]="12">
+        <nz-select
+          nzMode="multiple"
+          nzPlaceHolder="请选择需求提出人"
+          formControlName="proposerIds"
+        >
+          <nz-option [(nzDisabled)]="user.deleteDate" *ngFor="let user of userList" [(nzLabel)]="user.name" [(nzValue)]="user.id"></nz-option>
+        </nz-select>
+      </nz-form-control>
+      <nz-form-label [nzSm]="5" [nzXs]="12" nzFor="brokerIds">需求对接人</nz-form-label>
+      <nz-form-control [nzSm]="6" [nzXs]="12">
+        <nz-select
+          nzMode="multiple"
+          nzPlaceHolder="请选择对接人"
+          formControlName="brokerIds"
+        >
+          <nz-option [(nzDisabled)]="user.deleteDate" *ngFor="let user of userList" [(nzLabel)]="user.name" [(nzValue)]="user.id"></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="ant-form-item ant-row">
+      <nz-form-label [nzSm]="5" [nzXs]="12" nzFor="developerIds">开发者</nz-form-label>
+      <nz-form-control [nzSm]="6" [nzXs]="12">
+        <nz-select
+          nzMode="multiple"
+          nzPlaceHolder="请选择开发者"
+          formControlName="developerIds"
+        >
+          <nz-option [(nzDisabled)]="user.deleteDate" *ngFor="let user of userList" [(nzLabel)]="user.name" [(nzValue)]="user.id"></nz-option>
+        </nz-select>
+      </nz-form-control>
+      <nz-form-label [nzSm]="5" [nzXs]="12" nzFor="devopsIds">运维或其他</nz-form-label>
+      <nz-form-control [nzSm]="6" [nzXs]="12">
+        <nz-select
+          nzMode="multiple"
+          nzPlaceHolder="请选择运维或其他"
+          formControlName="devopsIds"
+        >
+        <nz-option [(nzDisabled)]="user.deleteDate" *ngFor="let user of userList" [(nzLabel)]="user.name" [(nzValue)]="user.id"></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="ant-form-item ant-row">
+      <nz-form-label [nzSm]="5" [nzXs]="12" nzRequired nzFor="manDay">开发人天</nz-form-label>
+      <nz-form-control [nzSm]="6" [nzXs]="12" nzErrorTip="开发人天必填">
+        <input nz-input min="0" type="number" id="manDay" placeHolder="请填写开发人天" formControlName="manDay" />
+      </nz-form-control>
+      <nz-form-label [nzSm]="5" [nzXs]="12" nzFor="url">线上链接</nz-form-label>
+      <nz-form-control [nzSm]="6" [nzXs]="12">
+        <input nz-input id="url" formControlName="url" placeHolder="请填写线上链接" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="ant-form-item ant-row">
+      <nz-form-label [nzSm]="5" [nzXs]="12" nzFor="scheduleStartDate">排期开始时间</nz-form-label>
+      <nz-form-control [nzSm]="6" [nzXs]="12">
+        <nz-date-picker	[nzShowToday]="false" nzPlaceHolder="请选择排期开始时间" id="scheduleStartDate" formControlName="scheduleStartDate" ></nz-date-picker>
+      </nz-form-control>
+      <nz-form-label [nzSm]="5" [nzXs]="12" nzFor="scheduleEndDate">排期结束时间</nz-form-label>
+      <nz-form-control [nzSm]="6" [nzXs]="12">
+        <nz-date-picker	[nzShowToday]="false" nzPlaceHolder="请选择排期结束时间" id="scheduleEndDate" formControlName="scheduleEndDate" ></nz-date-picker>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="ant-form-item ant-row">
+      <nz-form-label [nzSm]="4" [nzXs]="24">附件</nz-form-label>
+      <nz-form-control [nzSm]="18" [nzXs]="24">
+        <nz-upload [nzAction]="rootUrl + '/api/demand/addFile'" id="fileList" [(nzFileList)]="uploadFileList" (nzChange)="upload($event)">
+          <button nz-button><i nz-icon nzType="upload"></i><span>上传</span></button>
+        </nz-upload>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="ant-form-item ant-row">
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="detail">需求详情</nz-form-label>
+      <nz-form-control [nzSm]="18" [nzXs]="24">
+        <textarea nz-input rows="8" id="detail" formControlName="detail" placeHolder="请填写需求详情"></textarea>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="ant-form-item ant-row">
+      <nz-form-label [nzSm]="4" [nzXs]="24" nzFor="comment">审批备注</nz-form-label>
+      <nz-form-control [nzSm]="18" [nzXs]="24">
+        <textarea nz-input rows="8" id="comment" formControlName="comment" placeHolder="请填写审批备注"></textarea>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+  </nz-modal>
+</div>

@@ -1,0 +1,14 @@
+{
+  "/demand-manager/api":{
+    "target":"http://localhost:4005",
+    "secure":false,
+    "logLevel":"debug",
+    "changeOrigin":true
+  },
+  "/demand-manager/static":{
+    "target":"http://localhost:4005",
+    "secure":false,
+    "logLevel":"debug",
+    "changeOrigin":true
+  }
+}

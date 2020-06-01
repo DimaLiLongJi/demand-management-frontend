@@ -1,0 +1,57 @@
+<div class="role-list-container sub-page-container">
+  <nz-page-header nzTitle="角色列表"></nz-page-header>
+  <div class="operating-container">
+    <div nz-row>
+      <span class="select-title">归档状态：</span>
+      <nz-select nzPlaceHolder="选择归档状态" [(ngModel)]="searchData.isOn">
+        <nz-option nzLabel="全部状态" nzValue=""></nz-option>
+        <nz-option nzLabel="未归档" nzValue="1"></nz-option>
+        <nz-option nzLabel="归档" nzValue="2"></nz-option>
+      </nz-select>
+    </div>
+    <div nz-row>
+      <button nz-button nzType="primary" (click)="pageIndexChange(1)">搜索角色</button>
+      <button nz-button nzType="primary" (click)="roleCreatorVisible = true;">新增角色</button>
+    </div>
+  </div>
+  <div class="list-container">
+    <nz-table
+      #roleTable
+      nzTitle="角色列表"
+      nzFrontPagination="false"
+      [nzData]="roleList"
+      [nzTotal]="total"
+      [nzBordered]="true"
+      [nzPageIndex]="searchData.pageIndex"
+      [nzPageSize]="searchData.pageSize"
+      (nzPageIndexChange)="pageIndexChange($event)"
+    >
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>名称</th>
+          <th>创建人</th>
+          <th>创建时间</th>
+          <th>状态</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let role of roleTable.data">
+          <td>{{ role.id }}</td>
+          <td>{{ role.name }}</td>
+          <td>{{ role.creator.name }}</td>
+          <td>{{ role.createDate | date: "MM/dd/yy" }}</td>
+          <td>{{ role.deleteDate | status }}</td>
+          <td>
+            <button *ngIf="!role.deleteDate" nz-button nzType="danger" nzSize="small" (click)="deleteRole(role, true)">归档</button>
+            <button *ngIf="role.deleteDate" nz-button nzType="primary" nzSize="small" (click)="deleteRole(role, false)">未归档</button>
+            <nz-divider nzType="vertical"></nz-divider>
+            <button nz-button nzType="primary" nzSize="small" (click)="editRole(role.id)">编辑</button>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </div>
+  <app-role-creator [roleId]="activeRoleId" [modalVisible]="roleCreatorVisible" (changeModal)="changeRoleCreatorModal($event)"></app-role-creator>
+</div>

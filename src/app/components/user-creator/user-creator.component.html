@@ -1,0 +1,55 @@
+<div class="role-creator-container">
+  <nz-modal
+    [(nzVisible)]="modalVisible"
+    nzMask="true"
+    nzZIndex="1001"
+    [nzTitle]="modalTitle"
+    nzMaskClosable="false"
+    (nzOnCancel)="handleCancel()"
+    (nzOnOk)="handleOnOk()"
+    (nzAfterOpen)="afterOpen()"
+    (nzAfterClose)="afterClose()"
+    [nzOkLoading]="isOkLoading"
+  >
+  <form nz-form [formGroup]="validateForm">
+    <nz-form-item class="ant-form-item ant-row">
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="name">用户名</nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="用户名必填">
+        <input nz-input id="name" formControlName="name" placeHolder="请填写用户名"/>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="ant-form-item ant-row">
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="mobile">手机号</nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="手机号必填">
+        <input nz-input type="tel" id="mobile" formControlName="mobile" placeHolder="请填写手机号，手机号为初始密码"/>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="ant-form-item ant-row">
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="email">邮箱</nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="邮箱必填">
+        <input nz-input id="email" formControlName="email" placeHolder="请填写邮箱"/>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="ant-form-item ant-row">
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="role">所属角色</nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="所属角色必选">
+        <nz-select formControlName="role" nzPlaceHolder="请选择所属角色">
+          <nz-option [(nzDisabled)]="role.deleteDate" *ngFor="let role of roleList" [(nzLabel)]="role.name" [(nzValue)]="role.id"></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="ant-form-item ant-row">
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="permissionIds">权限</nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <nz-select
+          nzMode="multiple"
+          nzPlaceHolder="请选择权限"
+          formControlName="permissionIds"
+        >
+          <nz-option [(nzDisabled)]="permission.deleteDate" *ngFor="let permission of permissionList" [(nzLabel)]="permission.name" [(nzValue)]="permission.id"></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+  </nz-modal>
+</div>

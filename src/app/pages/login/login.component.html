@@ -1,0 +1,13 @@
+<div class="login-container">
+  <div class="login-input-container">
+    <img [src]="rootUrl + '/static/login-bg.png'" alt="logo">
+    <h1 nz-title style="text-align: center">需求管理平台</h1>
+    <nz-input-group nzAddOnBefore="账户：" class="input-group">
+      <input type="text" nz-input [(ngModel)]="account" />
+    </nz-input-group>
+    <nz-input-group nzAddOnBefore="密码：" >
+      <input type="password" nz-input [(ngModel)]="password" />
+    </nz-input-group>
+  </div>
+  <button class="login-btn" nz-button nzSize="large" nzType="primary" (click)="login()">登录</button>
+</div>

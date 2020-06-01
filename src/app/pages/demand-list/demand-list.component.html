@@ -1,0 +1,144 @@
+<div class="demand-list-container sub-page-container">
+  <nz-page-header nzTitle="需求列表"></nz-page-header>
+  <div class="operating-container">
+    <div nz-row>
+      <span class="select-title">归档状态：</span>
+      <nz-select nzPlaceHolder="选择归档状态" [(ngModel)]="searchData.isOn">
+        <nz-option nzLabel="全部状态" nzValue=""></nz-option>
+        <nz-option nzLabel="未归档" nzValue="1"></nz-option>
+        <nz-option nzLabel="归档" nzValue="2"></nz-option>
+      </nz-select>
+      <span class="select-title">延期状态：</span>
+      <nz-select nzPlaceHolder="选择延期状态" [(ngModel)]="searchData.timeout">
+        <nz-option nzLabel="全部状态" nzValue=""></nz-option>
+        <nz-option nzLabel="未延期" nzValue="1"></nz-option>
+        <nz-option nzLabel="即将延期" nzValue="2"></nz-option>
+        <nz-option nzLabel="已经延期" nzValue="3"></nz-option>
+        <nz-option nzLabel="需求完成" nzValue="4"></nz-option>
+      </nz-select>
+    </div>
+    <div nz-row>
+      <span class="select-title">需求类型：</span>
+      <nz-select nzPlaceHolder="选择需求类型" [(ngModel)]="searchData.demandType" (ngModelChange)="demandTypeChange($event)">
+        <!-- <nz-option nzLabel="全部类型" nzValue=""></nz-option> -->
+        <nz-option [(nzDisabled)]="demandType.deleteDate" *ngFor="let demandType of demandTypeList" [(nzLabel)]="demandType.name" [(nzValue)]="demandType.id" ></nz-option>
+      </nz-select>
+      <span class="select-title">需求状态：</span>
+      <nz-select nzPlaceHolder="选择需求状态" [(ngModel)]="searchData.demandStatus">
+        <nz-option nzLabel="全部状态" nzValue=""></nz-option>
+        <nz-option [(nzDisabled)]="demandStatus.deleteDate" *ngFor="let demandStatus of demandStatusList" [(nzLabel)]="demandStatus.name" [(nzValue)]="demandStatus.id" ></nz-option>
+      </nz-select>
+      <button nz-button nzType="danger" (click)="showMore= !showMore;">{{ showMore ? '收起更多' : '展开更多' }}</button>
+    </div>
+    <div class="show-more-row" [ngClass]="{'show': showMore === true}" nz-row>
+      <div nz-row>
+        <span class="select-title">需求创建者：</span>
+        <nz-select nzPlaceHolder="选择创建者" [(ngModel)]="searchData.creator">
+          <nz-option nzLabel="全部创建者" nzValue=""></nz-option>
+          <nz-option [(nzDisabled)]="user.deleteDate" *ngFor="let user of userList" [(nzLabel)]="user.name" [(nzValue)]="user.id" ></nz-option>
+        </nz-select>
+        <span class="select-title">需求提出人：</span>
+        <nz-select nzPlaceHolder="选择需求人" [(ngModel)]="searchData.proposer">
+          <nz-option nzLabel="全部需求人" nzValue=""></nz-option>
+          <nz-option [(nzDisabled)]="user.deleteDate" *ngFor="let user of userList" [(nzLabel)]="user.name" [(nzValue)]="user.id" ></nz-option>
+        </nz-select>
+        <span class="select-title">需求对接人：</span>
+        <nz-select nzPlaceHolder="选择对接人" [(ngModel)]="searchData.broker">
+          <nz-option nzLabel="全部对接人" nzValue=""></nz-option>
+          <nz-option [(nzDisabled)]="user.deleteDate" *ngFor="let user of userList" [(nzLabel)]="user.name" [(nzValue)]="user.id" ></nz-option>
+        </nz-select>
+      </div>
+      <div nz-row>
+        <span class="select-title">开发者：</span>
+        <nz-select nzPlaceHolder="选择开发者" [(ngModel)]="searchData.developer">
+          <nz-option nzLabel="全部开发者" nzValue=""></nz-option>
+          <nz-option [(nzDisabled)]="user.deleteDate" *ngFor="let user of userList" [(nzLabel)]="user.name" [(nzValue)]="user.id" ></nz-option>
+        </nz-select>
+        <span class="select-title">运维或其他：</span>
+        <nz-select nzPlaceHolder="选择运维或其他" [(ngModel)]="searchData.devops">
+          <nz-option nzLabel="全部运维或其他" nzValue=""></nz-option>
+          <nz-option [(nzDisabled)]="user.deleteDate" *ngFor="let user of userList" [(nzLabel)]="user.name" [(nzValue)]="user.id" ></nz-option>
+        </nz-select>
+      </div>
+      <div nz-row>
+        <span class="select-title">需求创建时间：</span>
+        <nz-range-picker [(ngModel)]="demandCreateDate"></nz-range-picker>
+        <span class="select-title">需求完成时间：</span>
+        <nz-range-picker [(ngModel)]="demandEndDate"></nz-range-picker>
+      </div>
+      <div nz-row>
+        <span class="select-title">排期开始时间：</span>
+        <nz-range-picker [(ngModel)]="scheduleStartDate"></nz-range-picker>
+        <span class="select-title">排期结束时间：</span>
+        <nz-range-picker [(ngModel)]="scheduleEndDate"></nz-range-picker>
+      </div>
+      <div nz-row>
+        <span class="select-title">模糊搜索：</span>
+        <input class="search-keyword" nz-input [(ngModel)]="searchData.keyword" placeholder="模糊搜索需求名字和详情" />
+      </div>
+    </div>
+    <div nz-row>
+      <button nz-button nzType="primary" (click)="pageIndexChange(1)">搜索需求</button>
+      <button nz-button nzType="primary" (click)="reset()">重置并搜索</button>
+      <a nz-button nzType="primary" [href]="exportExcel()" >导出excel</a>
+      <button nz-button nzType="primary" (click)="addDemand()">新增需求</button>
+    </div>
+  </div>
+  <div class="list-container">
+    <nz-table
+      #demandTable
+      nzTitle="需求列表"
+      nzFrontPagination="false"
+      [nzData]="demandList"
+      [nzTotal]="total"
+      [nzBordered]="true"
+      [nzPageIndex]="searchData.pageIndex"
+      [nzPageSize]="searchData.pageSize"
+      (nzPageIndexChange)="pageIndexChange($event)"
+    >
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>名称</th>
+          <th>需求类型</th>
+          <th>需求状态</th>
+          <th>需求人天</th>
+          <th>期望完成时间</th>
+          <th>创建人</th>
+          <th>创建时间</th>
+          <th>实际完成时间</th>
+          <th>是否归档</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr 
+          *ngFor="let demand of demandTable.data"
+          [ngClass]="{'warning':demand.timeout == '2', 'danger':demand.timeout == '3', 'finish':demand.timeout == '4'}"
+        >
+          <td>{{ demand.id }}</td>
+          <td>{{ demand.name }}</td>
+          <td>{{ demand.demandType.name }}</td>
+          <td>{{ demand.demandStatus.name }}</td>
+          <td>{{ demand.manDay }} 人/天</td>
+          <td>{{ demand.expectDate | date: "MM/dd/yy" }}</td>
+          <td>{{ demand.creator.name }}</td>
+          <td>{{ demand.createDate | date: "MM/dd/yy" }}</td>
+          <td>{{ demand?.finishDate | date: "MM/dd/yy" }}</td>
+          <td>{{ demand.deleteDate | status }}</td>
+          <td>
+            <button *ngIf="!demand.deleteDate" nz-button nzType="danger" nzSize="small" (click)="tryDeleteDemand(demand, true)">归档</button>
+            <button *ngIf="demand.deleteDate" nz-button nzType="primary" nzSize="small" (click)="tryDeleteDemand(demand, false)">未归档</button>
+            <nz-divider nzType="vertical"></nz-divider>
+            <button nz-button nzType="primary" nzSize="small" (click)="editDemand(demand.id)">详情</button>
+            <nz-divider nzType="vertical"></nz-divider>
+            <button nz-button nzType="primary" nzSize="small" (click)="openLog(demand.id)">操作记录</button>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </div>
+  <app-demand-creator [modalVisible]="demandCreatorVisible" (changeModal)="changeDemandCreatorModal($event)"></app-demand-creator>
+  <app-demand-editor [demandId]="activeDemandId" [modalVisible]="demandEditorVisible" (changeModal)="changeDemandEditorModal($event)"></app-demand-editor>
+  <app-demand-log [demandId]="activeLogDemandId" [modalVisible]="demandLogVisible" (changeModal)="changeDemandLogModal($event)"></app-demand-log>
+</div>

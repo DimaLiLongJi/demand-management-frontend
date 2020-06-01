@@ -1,0 +1,49 @@
+<div class="role-creator-container">
+  <nz-modal
+    [(nzVisible)]="modalVisible"
+    nzMask="true"
+    nzZIndex="1001"
+    [nzTitle]="modalTitle"
+    nzMaskClosable="false"
+    (nzOnCancel)="handleCancel()"
+    (nzOnOk)="handleOnOk()"
+    (nzAfterOpen)="afterOpen()"
+    (nzAfterClose)="afterClose()"
+    [nzOkLoading]="isOkLoading"
+  >
+  <form nz-form [formGroup]="validateForm">
+    <nz-form-item class="ant-form-item ant-row">
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="name">角色名</nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="角色名必填">
+        <input nz-input id="name" formControlName="name" placeHolder="请填写角色名"/>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="ant-form-item ant-row">
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="permissionIds">权限</nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <nz-select
+          nzMode="multiple"
+          formControlName="permissionIds"
+          nzPlaceHolder="请选择权限"
+        >
+          <nz-option [(nzDisabled)]="permission.deleteDate" *ngFor="let permission of permissionList" [(nzLabel)]="permission.name" [(nzValue)]="permission.id"></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="ant-form-item ant-row">
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="demandTypeIds">需求类型</nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <nz-select
+          nzMode="multiple"
+          formControlName="demandTypeIds"
+          nzPlaceHolder="请选择需求类型"
+        >
+          <nz-option [(nzDisabled)]="demandType.deleteDate" *ngFor="let demandType of demandTypeList" [(nzLabel)]="demandType.name" [(nzValue)]="demandType.id"></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+  </nz-modal>
+  <ng-template #tagPlaceHolder let-permissionIds>还有其他{{ permissionIds.length }}个</ng-template>
+  <ng-template #tagPlaceHolder let-demandTypeIds>还有其他{{ demandTypeIds.length }}个</ng-template>
+</div>

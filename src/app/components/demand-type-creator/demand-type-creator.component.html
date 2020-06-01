@@ -1,0 +1,60 @@
+<div class="demand-type-creator-container">
+  <nz-modal
+    [(nzVisible)]="modalVisible"
+    nzMask="true"
+    nzZIndex="1001"
+    [nzTitle]="modalTitle"
+    nzMaskClosable="false"
+    (nzOnCancel)="handleCancel()"
+    (nzOnOk)="handleOnOk()"
+    (nzAfterOpen)="afterOpen()"
+    (nzAfterClose)="afterClose()"
+    [nzOkLoading]="isOkLoading"
+  >
+  <form nz-form [formGroup]="validateForm">
+    <nz-form-item class="ant-form-item ant-row">
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="name">需求类型名</nz-form-label>
+      <nz-form-control [nzSm]="15" [nzXs]="24" nzErrorTip="需求类型名必填">
+        <input nz-input id="name" formControlName="name" placeHolder="请填写需求类型名" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="ant-form-item ant-row">
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="demandStatusIds">需求状态</nz-form-label>
+      <nz-form-control [nzSm]="15" [nzXs]="24" *ngIf="statusFormNameList && statusFormNameList.length > 0">
+        <div *ngFor="let name of statusFormNameList">
+          <nz-select nzPlaceHolder="请选择需求状态" nzPlaceHolder="选择需求状态" [formControlName]="'demand_status_id_' + name" (ngModelChange)="demandStatusChange(name, $event)">
+            <nz-option [nzDisabled]="canDisabled(demandStatus, name)" *ngFor="let demandStatus of demandStatusList" [(nzLabel)]="demandStatus.name" [(nzValue)]="demandStatus.id"></nz-option>
+          </nz-select>
+          <div style="display: flex;justify-content: space-around;align-items: center;">
+            <button nz-button nzType="primary"  (click)="addStatus(name)">新增状态</button>
+            <button nz-button nzType="danger" (click)="deleteStatus(name)">删除状态</button>
+            <button nz-button nzType="primary" (click)="editApprover(name)">修改审批人</button>
+          </div>
+        </div>
+        <!-- <nz-select nzPlaceHolder="请选择需求状态" nzMode="multiple" nzPlaceHolder="选择需求状态" formControlName="demandStatusIds">
+          <nz-option [(nzDisabled)]="demandStatus.deleteDate" *ngFor="let demandStatus of demandStatusList" [(nzLabel)]="demandStatus.name" [(nzValue)]="demandStatus.id"></nz-option>
+        </nz-select> -->
+      </nz-form-control>
+      <nz-form-control [nzSm]="15" [nzXs]="24" *ngIf="!statusFormNameList || statusFormNameList.length === 0">
+          <button nz-button nzType="primary" (click)="addStatus()">新增状态</button>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+  </nz-modal>
+  <nz-modal
+    [(nzVisible)]="approverVisible"
+    nzMask="true"
+    nzZIndex="1100"
+    nzTitle="审批人选择"
+    nzMaskClosable="false"
+    (nzOnCancel)="handleApproverCancel()"
+    (nzOnOk)="handleApproverOk()"
+    [nzOkLoading]="isOkLoading"
+  >
+    <form nz-form [formGroup]="userForm">
+      <nz-select nzPlaceHolder="请选择该状态的审批人" nzMode="multiple" nzPlaceHolder="选择需求状态" [formControlName]="'approverIds_' + activeStatusId" *ngIf="activeStatusId">
+        <nz-option [(nzDisabled)]="user.deleteDate" *ngFor="let user of userList" [(nzLabel)]="user.name" [(nzValue)]="user.id"></nz-option>
+      </nz-select>
+    </form>
+  </nz-modal>
+</div>

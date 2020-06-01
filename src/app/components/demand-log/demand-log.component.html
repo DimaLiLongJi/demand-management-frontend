@@ -1,0 +1,29 @@
+<div>
+  <nz-modal
+    [(nzVisible)]="modalVisible"
+    nzMask="true"
+    nzZIndex="1001"
+    nzTitle="操作日志"
+    nzMaskClosable="false"
+    (nzOnOk)="handleOnOk()"
+    (nzOnCancel)="handleOnOk()"
+    (nzAfterOpen)="afterOpen()"
+    [nzCancelText]="null"
+    nzClassName="demand-log-modal"
+    [nzStyle]="{ top: '20px' }"
+  >
+    <nz-list
+      [nzDataSource]="logList"
+      nzBordered
+      [nzHeader]="'需求操作记录'"
+      [nzRenderItem]="logItem"
+    >
+      <ng-template #logItem let-item>
+        <nz-list-item>
+          <span class="ant-typography"><mark>[{{item.date | date: "MM/dd/yy"}}]</mark></span>
+          {{item.content}}
+        </nz-list-item>
+      </ng-template>
+    </nz-list>
+  </nz-modal>
+</div>

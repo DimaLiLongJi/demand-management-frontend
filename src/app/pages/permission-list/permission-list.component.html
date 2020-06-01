@@ -1,0 +1,73 @@
+<div class="permission-list-container sub-page-container">
+  <nz-page-header nzTitle="权限列表"></nz-page-header>
+  <div class="operating-container">
+    <div nz-row>
+      <span class="select-title">归档状态：</span>
+      <nz-select nzPlaceHolder="选择归档状态" [(ngModel)]="searchData.isOn">
+        <nz-option nzLabel="全部状态" nzValue=""></nz-option>
+        <nz-option nzLabel="未归档" nzValue="1"></nz-option>
+        <nz-option nzLabel="归档" nzValue="2"></nz-option>
+      </nz-select>
+      <span class="select-title">权限类型：</span>
+      <nz-select nzPlaceHolder="选择类型" [(ngModel)]="searchData.type">
+        <nz-option nzLabel="全部权限" nzValue=""></nz-option>
+        <nz-option nzLabel="访问权限" nzValue="1"></nz-option>
+        <nz-option nzLabel="操作权限" nzValue="2"></nz-option>
+      </nz-select>
+    </div>
+    <div nz-row>
+      <button nz-button nzType="primary" (click)="pageIndexChange(1)">搜索权限</button>
+      <button nz-button nzType="primary" (click)="moduleCreatorVisible = true;">新增模块</button>
+      <button nz-button nzType="primary" (click)="permissionCreatorVisible = true;">新增权限</button>
+    </div>
+  </div>
+  <div class="list-container">
+    <nz-table
+      #permissionTable
+      nzTitle="权限列表"
+      nzFrontPagination="false"
+      [nzData]="permissionList"
+      [nzTotal]="total"
+      [nzBordered]="true"
+      [nzPageIndex]="searchData.pageIndex"
+      [nzPageSize]="searchData.pageSize"
+      (nzPageIndexChange)="pageIndexChange($event)"
+    >
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>名称</th>
+          <th>控制路径</th>
+          <th>控制操作</th>
+          <th>类型</th>
+          <th>所属模块</th>
+          <th>创建人</th>
+          <th>创建时间</th>
+          <th>状态</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let permission of permissionTable.data">
+          <td>{{ permission.id }}</td>
+          <td>{{ permission.name }}</td>
+          <td>{{ permission.route }}</td>
+          <td>{{ permission.operating }}</td>
+          <td>{{ permission.type | permissionType }}</td>
+          <td>{{ permission?.module?.name }}</td>
+          <td>{{ permission.creator.name }}</td>
+          <td>{{ permission.createDate | date: "MM/dd/yy" }}</td>
+          <td>{{ permission.deleteDate | status }}</td>
+          <td>
+            <button *ngIf="!permission.deleteDate" nz-button nzType="danger" nzSize="small" (click)="deletePermission(permission, true)">归档</button>
+            <button *ngIf="permission.deleteDate" nz-button nzType="primary" nzSize="small" (click)="deletePermission(permission, false)">未归档</button>
+            <nz-divider nzType="vertical"></nz-divider>
+            <button nz-button nzType="primary" nzSize="small" (click)="editPermission(permission.id)">编辑</button>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </div>
+  <app-module-creator [modalVisible]="moduleCreatorVisible" (changeModal)="changeModuleCreatorModal($event)"></app-module-creator>
+  <app-permission-creator [permissionId]="activePermissionId" [modalVisible]="permissionCreatorVisible" (changeModal)="changePermissionCreatorModal($event)"></app-permission-creator>
+</div>

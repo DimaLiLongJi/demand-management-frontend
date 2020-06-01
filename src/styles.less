@@ -1,0 +1,76 @@
+/* You can add global styles to this file, and also import other style files */
+@import "~ng-zorro-antd/ng-zorro-antd.less";
+@import "~ng-drag-drop/style.css";
+
+.ant-page-header {
+  padding-left: 0px;
+}
+
+.sub-page-container {
+  .operating-container {
+    .select-title {
+      display: inline-block;
+      width: 100px;
+    }
+    [nz-button] {
+      margin-right: 12px;
+      margin-bottom: 12px;
+    }
+    nz-select {
+      width: 200px;
+      margin-right: 8px;
+      margin-bottom: 12px;
+    }
+
+    nz-range-picker {
+      width: 410px !important;
+      margin-right: 8px;
+      margin-bottom: 12px;
+    }
+  }
+
+  .warning {
+    background-color: #fffbe6;
+    border: 1px solid #ffe58f;
+  }
+  .danger {
+    background-color: #fff1f0;
+    border: 1px solid #ffa39e;
+  }
+  .finish {
+    background-color: #f6ffed;
+    border: 1px solid #b7eb8f;
+  }
+}
+
+.demand-creator-modal {
+  width: 800px !important;
+  .ant-modal-body {
+    height: 80vh;
+    overflow: scroll;
+  }
+}
+
+.demand-log-modal {
+  width: 800px !important;
+  .ant-modal-body {
+    max-height: 80vh;
+    overflow: scroll;
+  }
+}
+
+.ant-calendar-picker {
+  width: 100% !important;
+}
+
+.search-keyword {
+  width: 180px;
+  margin-right: 8px;
+  margin-bottom: 12px;
+}
+
+.spinning {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+}

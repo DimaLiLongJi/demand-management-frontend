@@ -1,0 +1,32 @@
+<div class="demand-status-creator-container">
+  <nz-modal
+    [(nzVisible)]="modalVisible"
+    nzMask="true"
+    nzZIndex="1001"
+    [nzTitle]="modalTitle"
+    nzMaskClosable="false"
+    (nzOnCancel)="handleCancel()"
+    (nzOnOk)="handleOnOk()"
+    (nzAfterOpen)="afterOpen()"
+    (nzAfterClose)="afterClose()"
+    [nzOkLoading]="isOkLoading"
+  >
+  <form nz-form [formGroup]="validateForm">
+    <nz-form-item class="ant-form-item ant-row">
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="name">需求状态名</nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="需求状态名必填">
+        <input nz-input id="name" formControlName="name" placeHolder="请填写需求状态名" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="ant-form-item ant-row">
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="isEndStatus">状态是否结束</nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="是否为结束状态必选">
+        <nz-select formControlName="isEndStatus" nzPlaceHolder="请选择是否为结束状态" >
+          <nz-option nzLabel="非结束状态" nzValue="1"></nz-option>
+          <nz-option nzLabel="已结束状态" nzValue="2"></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+  </nz-modal>
+</div>
