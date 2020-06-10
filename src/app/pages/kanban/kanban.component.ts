@@ -227,6 +227,7 @@ export class KanbanComponent implements OnInit, OnDestroy {
 
   public changeDemandCreatorModal(visible: boolean) {
     this.demandCreatorVisible = visible;
+    this.getDemandList();
   }
 
   public tryDeleteDemand(demand: Demand, isDelete: boolean) {
