@@ -2,9 +2,10 @@ import { Component, Input, Output, EventEmitter, OnDestroy, OnInit } from '@angu
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { DemandTypeService } from '@/service/demand-type.service';
 import { DemandStatusService } from '@/service/demand-status.service';
+import { DemandTypeStatusIndexService } from '@/service/demand-type-stataus-index.service';
 import { NzNotificationService, NzMessageService } from 'ng-zorro-antd';
 import { Subscription } from 'rxjs';
-import { DemandStatusDetail, UserDetail } from '@/types';
+import { DemandStatusDetail, UserDetail, DemandTypeStatusIndex } from '@/types';
 import { UserService } from '@/service/user.service';
 
 @Component({
@@ -42,6 +43,8 @@ export class DemandTypeCreatorComponent implements OnInit, OnDestroy {
   private getDemandTypeById$: Subscription;
   public getDemandStatusList$: Subscription;
   public getUserList$: Subscription;
+  public createByDemandTypeId$: Subscription;
+  public getDemandTypeStatusIndex$: Subscription;
 
   public modalTitle = '新增需求类型';
   public demandStatusList: DemandStatusDetail[];
@@ -57,6 +60,7 @@ export class DemandTypeCreatorComponent implements OnInit, OnDestroy {
     private notification: NzNotificationService,
     private message: NzMessageService,
     private fb: FormBuilder,
+    private demandTypeStatusIndexService: DemandTypeStatusIndexService,
   ) { }
 
   public ngOnInit() {
@@ -74,6 +78,8 @@ export class DemandTypeCreatorComponent implements OnInit, OnDestroy {
     if (this.updateDemandType$) this.updateDemandType$.unsubscribe();
     if (this.getDemandTypeById$) this.getDemandTypeById$.unsubscribe();
     if (this.getDemandStatusList$) this.getDemandStatusList$.unsubscribe();
+    if (this.createByDemandTypeId$) this.createByDemandTypeId$.unsubscribe();
+    if (this.getDemandTypeStatusIndex$) this.getDemandTypeStatusIndex$.unsubscribe();
   }
 
   public afterOpen() {
@@ -108,15 +114,21 @@ export class DemandTypeCreatorComponent implements OnInit, OnDestroy {
     if (this.getDemandTypeById$) this.getDemandTypeById$.unsubscribe();
     this.getDemandTypeById$ = this.demandTypeService.getById(id).subscribe(res => {
       if (res.success) {
-        const ids = res.data.demandStatusList ? res.data.demandStatusList.map(demandStatus => demandStatus.id) : [];
+        let ids = res.data.demandStatusList ? res.data.demandStatusList.map(demandStatus => demandStatus.id) : [];
 
         this.validateForm.controls['name'].setValue(res.data.name);
         this.validateForm.controls['name'].setValidators([Validators.required]);
-        // this.validateForm.controls['demandStatusIds'].setValue(ids);
-        // this.validateForm.controls['demandStatusIds'].setValidators(null);
 
-        this.addStatusFormControl(ids);
-        this.addApproverFormControl(res.data.approverList);
+        if (this.getDemandTypeStatusIndex$) this.getDemandTypeStatusIndex$.unsubscribe();
+        this.getDemandTypeStatusIndex$ = this.demandTypeStatusIndexService.getByDemandTypeId(res.data.id).subscribe((res2) => {
+          if (res2.data && res2.data.length > 0 && this.demandStatusList && this.demandStatusList.length > 0) {
+            ids = [...ids.sort((a, b) => {
+              return res2.data.find(da => da.demandStatus.id === a).index - res2.data.find(da => da.demandStatus.id === b).index;
+            })];
+          }
+          this.addStatusFormControl(ids);
+          this.addApproverFormControl(res.data.approverList);
+        });
       } else {
         this.message.error('获取需求类型详情失败');
       }
@@ -159,6 +171,16 @@ export class DemandTypeCreatorComponent implements OnInit, OnDestroy {
     };
   }
 
+  private buildIndexParams(typeId: number): DemandTypeStatusIndex[] {
+    return this.statusFormNameList.map((name: string, index) => {
+      return {
+        demandStatus: this.validateForm.value[`demand_status_id_${name}`],
+        demandType: typeId,
+        index,
+      };
+    });
+  }
+
   public handleOnOk() {
     if (this.demandTypeId) this.updateDemandType();
     else this.addDemandType();
@@ -172,6 +194,9 @@ export class DemandTypeCreatorComponent implements OnInit, OnDestroy {
     this.createDemandType$ = this.demandTypeService.createDemandType(params).subscribe(res => {
       this.isOkLoading = false;
       if (res.success) {
+        if (this.createByDemandTypeId$) this.createByDemandTypeId$.unsubscribe();
+        const demandTypeId = res.data.id;
+        this.createByDemandTypeId$ = this.demandTypeStatusIndexService.createByDemandTypeId(demandTypeId, this.buildIndexParams(demandTypeId)).subscribe(() => {});
         this.changeModal.emit(false);
         this.validateForm.reset();
         this.notification.success('成功', '创建需求类型成功', {
@@ -193,6 +218,8 @@ export class DemandTypeCreatorComponent implements OnInit, OnDestroy {
     this.updateDemandType$ = this.demandTypeService.updateDemandType(this.demandTypeId, params).subscribe(res => {
       this.isOkLoading = false;
       if (res.success) {
+        if (this.createByDemandTypeId$) this.createByDemandTypeId$.unsubscribe();
+        this.createByDemandTypeId$ = this.demandTypeStatusIndexService.createByDemandTypeId(this.demandTypeId, this.buildIndexParams(this.demandTypeId)).subscribe(() => {});
         this.changeModal.emit(false);
         this.validateForm.reset();
         this.notification.success('成功', '更新需求类型成功', {

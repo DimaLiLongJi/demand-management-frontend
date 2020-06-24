@@ -14,6 +14,7 @@ import { ApproverDetail } from '@/types/approver';
 import { RoleService } from '@/service/role.service';
 import { SpinControllerService } from '@/service/spin.controller.service';
 import { API_URL } from '@/service/environment.service';
+import { DemandTypeStatusIndexService } from '@/service/demand-type-stataus-index.service';
 
 @Component({
   selector: 'app-kanban-list',
@@ -50,6 +51,7 @@ export class KanbanComponent implements OnInit, OnDestroy {
   public getCanPassDemandList$: Subscription;
   public getUserList$: Subscription;
   public passDemand$: Subscription;
+  public getDemandTypeStatusIndex$: Subscription;
 
   public activeDemandId: number = null;
   public demandEditorVisible = false;
@@ -72,6 +74,7 @@ export class KanbanComponent implements OnInit, OnDestroy {
     private modalService: NzModalService,
     public spinControllerService: SpinControllerService,
     @Inject(API_URL) public rootUrl: string,
+    private demandTypeStatusIndexService: DemandTypeStatusIndexService,
   ) { }
 
   public ngOnInit() {
@@ -89,6 +92,7 @@ export class KanbanComponent implements OnInit, OnDestroy {
     if (this.getUserList$) this.getUserList$.unsubscribe();
     if (this.getApproverList$) this.getApproverList$.unsubscribe();
     if (this.passDemand$) this.passDemand$.unsubscribe();
+    if (this.getDemandTypeStatusIndex$) this.getDemandTypeStatusIndex$.unsubscribe();
   }
 
   public reset() {
@@ -208,6 +212,17 @@ export class KanbanComponent implements OnInit, OnDestroy {
     });
   }
 
+  private resetDemandTypeStatusIndex(typeId: number) {
+    if (this.getDemandTypeStatusIndex$) this.getDemandTypeStatusIndex$.unsubscribe();
+    this.getDemandTypeStatusIndex$ = this.demandTypeStatusIndexService.getByDemandTypeId(typeId).subscribe((res2) => {
+      if (res2.data && res2.data.length > 0 && this.demandStatusList && this.demandStatusList.length > 0) {
+        this.demandStatusList = [...this.demandStatusList.sort((a, b) => {
+          return res2.data.find(da => da.demandStatus.id === a.id).index - res2.data.find(da => da.demandStatus.id === b.id).index;
+        })];
+      }
+    });
+  }
+
   public getDemandTypeList() {
     if (this.getDemandTypeList$) this.getDemandTypeList$.unsubscribe();
     this.getDemandTypeList$ = this.roleService.getById(this.authService.self.role.id).subscribe(res => {
@@ -215,6 +230,7 @@ export class KanbanComponent implements OnInit, OnDestroy {
         this.demandTypeList = res.data.demandTypeList || [];
         this.demandStatusList = this.demandTypeList && this.demandTypeList[0] ? this.demandTypeList[0].demandStatusList : [];
         this.searchData.demandType = this.demandTypeList && this.demandTypeList[0] ? this.demandTypeList[0].id : '';
+        this.resetDemandTypeStatusIndex(this.demandTypeList[0].id);
         this.getDemandList();
       } else this.message.error('获取信息列表失败');
     });
@@ -223,6 +239,7 @@ export class KanbanComponent implements OnInit, OnDestroy {
   public demandTypeChange(id: number) {
     const demandStatus = this.demandTypeList ? this.demandTypeList.find(demandType => demandType.id === id) : null;
     this.demandStatusList = demandStatus ? demandStatus.demandStatusList : [];
+    this.resetDemandTypeStatusIndex(id);
   }
 
   public changeDemandCreatorModal(visible: boolean) {
@@ -316,12 +333,18 @@ export class KanbanComponent implements OnInit, OnDestroy {
     else {
       // 最后如果有修改权限的才能改
       this.permissionControllerService.hasPermission(
-        PermissionEnum.updateDemand,
+        PermissionEnum.updateDemandStatus,
         () => this.dragDataConfirm(demand, kanban.statusId),
         () => {
-          this.notification.error('失败', `你没有【${PermissionEnum.updateDemand}】权限，请联系管理员`, {
-            nzDuration: 3000,
-          });
+          this.permissionControllerService.hasPermission(
+            PermissionEnum.updateDemand,
+            () => this.dragDataConfirm(demand, kanban.statusId),
+            () => {
+              this.notification.error('失败', `你没有【${PermissionEnum.updateDemandStatus}】或【${PermissionEnum.updateDemand}】权限，请联系管理员`, {
+                nzDuration: 3000,
+              });
+            }
+          );
         }
       );
     }
