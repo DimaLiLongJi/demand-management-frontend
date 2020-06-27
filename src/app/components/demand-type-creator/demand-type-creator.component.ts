@@ -123,7 +123,7 @@ export class DemandTypeCreatorComponent implements OnInit, OnDestroy {
         this.getDemandTypeStatusIndex$ = this.demandTypeStatusIndexService.getByDemandTypeId(res.data.id).subscribe((res2) => {
           if (res2.data && res2.data.length > 0 && this.demandStatusList && this.demandStatusList.length > 0) {
             ids = [...ids.sort((a, b) => {
-              return res2.data.find(da => da.demandStatus.id === a).index - res2.data.find(da => da.demandStatus.id === b).index;
+              return res2.data.find(da => da.demandStatus.id === a).statusIndex - res2.data.find(da => da.demandStatus.id === b).statusIndex;
             })];
           }
           this.addStatusFormControl(ids);
@@ -176,7 +176,7 @@ export class DemandTypeCreatorComponent implements OnInit, OnDestroy {
       return {
         demandStatus: this.validateForm.value[`demand_status_id_${name}`],
         demandType: typeId,
-        index,
+        statusIndex: index,
       };
     });
   }

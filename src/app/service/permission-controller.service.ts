@@ -16,20 +16,25 @@ export class PermissionControllerService {
   public selfPermissionList: PermissionDetail[];
 
   public hasPermission(
-    permission?: string,
+    permissions?: string[],
     success?: (list?: PermissionDetail[]) => any,
     error?: (list?: PermissionDetail[]) => any
   ): void {
     if (this.permissionList$) this.permissionList$.unsubscribe();
     this.permissionList$ = this.authService.permissionList$.subscribe(permissionList => {
       this.selfPermissionList = permissionList;
-      if (permission && !this.selfPermissionList.find(per => per.operating === permission)) {
-        if (error) error(permissionList);
-        else this.notification.error('失败', `你没有【${permission}】权限，请联系管理员`, {
-          nzDuration: 3000,
+      if (permissions && permissions.length > 0) {
+        let canPass = false;
+        permissions.forEach(permission => {
+          if (this.selfPermissionList.find(per => per.operating === permission)) canPass = true;
         });
-      } else {
-        if (success) success(permissionList);
+        if (canPass && success) success(permissionList);
+        else {
+          if (error) error(permissionList);
+          else this.notification.error('失败', `你没有【${permissions.toString()}】权限，请联系管理员`, {
+            nzDuration: 3000,
+          });
+        }
       }
     });
   }

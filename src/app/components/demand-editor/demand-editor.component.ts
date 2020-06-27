@@ -385,19 +385,23 @@ export class DemandEditorComponent implements OnInit, OnDestroy {
     else if (type === 'brokerIds' && this.brokerList.indexOf(this.authService.self.id) !== -1) this.changeData(type);
     else if (type === 'developerIds' && this.developerList.indexOf(this.authService.self.id) !== -1) this.changeData(type);
     else if (type === 'devopsIds' && this.devopsList.indexOf(this.authService.self.id) !== -1) this.changeData(type);
-    else {
-      // 最后如果有修改权限的才能改
+    else if (type === 'demandStatus') {
       this.permissionControllerService.hasPermission(
-        PermissionEnum.updateDemand,
+        [PermissionEnum.updateDemandStatus, PermissionEnum.updateDemand],
         () => this.changeData(type),
         () => {
-          // 最后如果有状态修改权限的才能改
-          if (type === 'demandStatus') {
-            this.permissionControllerService.hasPermission(
-              PermissionEnum.updateDemandStatus,
-              () => this.changeData(type),
-            );
-          } else this.notification.error('失败', `你没有【${PermissionEnum.updateDemand}】权限，请联系管理员`, {
+          this.notification.error('失败', `你没有【${PermissionEnum.updateDemandStatus}】或【${PermissionEnum.updateDemand}】权限，请联系管理员`, {
+            nzDuration: 3000,
+          });
+        }
+      );
+    } else {
+      // 最后如果有修改权限的才能改
+      this.permissionControllerService.hasPermission(
+        [PermissionEnum.updateDemand],
+        () => this.changeData(type),
+        () => {
+          this.notification.error('失败', `你没有【${PermissionEnum.updateDemand}】权限，请联系管理员`, {
             nzDuration: 3000,
           });
         }

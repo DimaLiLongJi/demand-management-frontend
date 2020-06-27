@@ -217,7 +217,7 @@ export class KanbanComponent implements OnInit, OnDestroy {
     this.getDemandTypeStatusIndex$ = this.demandTypeStatusIndexService.getByDemandTypeId(typeId).subscribe((res2) => {
       if (res2.data && res2.data.length > 0 && this.demandStatusList && this.demandStatusList.length > 0) {
         this.demandStatusList = [...this.demandStatusList.sort((a, b) => {
-          return res2.data.find(da => da.demandStatus.id === a.id).index - res2.data.find(da => da.demandStatus.id === b.id).index;
+          return res2.data.find(da => da.demandStatus.id === a.id).statusIndex - res2.data.find(da => da.demandStatus.id === b.id).statusIndex;
         })];
       }
     });
@@ -252,7 +252,7 @@ export class KanbanComponent implements OnInit, OnDestroy {
     if (demand.creator === this.authService.self.id) this.deleteDemand(demand, isDelete);
     else {
       this.permissionControllerService.hasPermission(
-        PermissionEnum.updateDemand,
+        [PermissionEnum.updateDemand],
         () => this.deleteDemand(demand, isDelete),
         () => {
           this.notification.error('失败', `你没有【${PermissionEnum.updateDemand}】权限，请联系管理员`, {
@@ -333,18 +333,12 @@ export class KanbanComponent implements OnInit, OnDestroy {
     else {
       // 最后如果有修改权限的才能改
       this.permissionControllerService.hasPermission(
-        PermissionEnum.updateDemandStatus,
+        [PermissionEnum.updateDemandStatus, PermissionEnum.updateDemand],
         () => this.dragDataConfirm(demand, kanban.statusId),
         () => {
-          this.permissionControllerService.hasPermission(
-            PermissionEnum.updateDemand,
-            () => this.dragDataConfirm(demand, kanban.statusId),
-            () => {
-              this.notification.error('失败', `你没有【${PermissionEnum.updateDemandStatus}】或【${PermissionEnum.updateDemand}】权限，请联系管理员`, {
-                nzDuration: 3000,
-              });
-            }
-          );
+          this.notification.error('失败', `你没有【${PermissionEnum.updateDemandStatus}】或【${PermissionEnum.updateDemand}】权限，请联系管理员`, {
+            nzDuration: 3000,
+          });
         }
       );
     }

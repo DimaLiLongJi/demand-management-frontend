@@ -183,7 +183,7 @@ export class SelfDemandListComponent implements OnInit, OnDestroy {
     if (demand.creator === this.authService.self.id) this.deleteDemand(demand, isDelete);
     else {
       this.permissionControllerService.hasPermission(
-        PermissionEnum.updateDemand,
+        [PermissionEnum.updateDemand],
         () => this.deleteDemand(demand, isDelete),
         () => {
           this.notification.error('失败', `你没有【${PermissionEnum.updateDemand}】权限，请联系管理员`, {
