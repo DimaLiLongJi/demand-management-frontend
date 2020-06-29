@@ -57,6 +57,8 @@
             <button *ngIf="user.deleteDate" nz-button nzType="primary" nzSize="small" (click)="deleteUser(user, false)">未归档</button>
             <nz-divider nzType="vertical"></nz-divider>
             <button nz-button nzType="primary" nzSize="small" (click)="editUser(user.id)">编辑</button>
+            <nz-divider nzType="vertical"></nz-divider>
+            <button nz-button nzType="primary" nzSize="small" (click)="resetUserPassword(user)">重置密码</button>
           </td>
         </tr>
       </tbody>

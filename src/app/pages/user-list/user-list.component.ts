@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { UserDetail, User, PermissionEnum } from '@/types';
 import { UserService } from '@/service/user.service';
 import { Subscription } from 'rxjs';
-import { NzMessageService } from 'ng-zorro-antd';
+import { NzMessageService, NzNotificationService } from 'ng-zorro-antd';
 import { API_URL } from '@/service/environment.service';
 import { HasPermission } from '@/decorators/has-permission';
 
@@ -29,11 +29,13 @@ export class UserListComponent implements OnInit, OnDestroy {
 
   public getUserList$: Subscription;
   public updateUser$: Subscription;
+  private updatePassword$: Subscription;
 
   constructor(
     private userService: UserService,
     private message: NzMessageService,
     @Inject(API_URL) public rootUrl: string,
+    private notification: NzNotificationService,
   ) { }
 
   public ngOnInit() {
@@ -43,6 +45,7 @@ export class UserListComponent implements OnInit, OnDestroy {
   public ngOnDestroy() {
     if (this.getUserList$) this.getUserList$.unsubscribe();
     if (this.updateUser$) this.updateUser$.unsubscribe();
+    if (this.updatePassword$) this.updatePassword$.unsubscribe();
   }
 
   public async pageIndexChange(pageIndex: number) {
@@ -107,6 +110,22 @@ export class UserListComponent implements OnInit, OnDestroy {
   @HasPermission(PermissionEnum.createUser)
   public addUser() {
     this.userCreatorVisible = true;
+  }
+
+  @HasPermission(PermissionEnum.resetUserPassword)
+  public resetUserPassword(user: UserDetail) {
+    if (this.updatePassword$) this.updatePassword$.unsubscribe();
+    this.updatePassword$ = this.userService.updatePassword(user.id, user.mobile).subscribe(res => {
+      if (res.success) {
+        this.notification.success('成功', `重置用户【${user.name}】密码成功`, {
+          nzDuration: 3000,
+        });
+      } else {
+        this.notification.error('失败', `重置用户【${user.name}】密码失败，原因：${res.message}`, {
+          nzDuration: 2000,
+        });
+      }
+    });
   }
 
   public exportExcel() {

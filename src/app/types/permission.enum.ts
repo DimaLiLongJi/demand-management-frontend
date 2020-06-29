@@ -5,4 +5,5 @@ export enum PermissionEnum {
   updateDemandStatus = 'update-demand-status',
   createUser = 'create-user',
   updateUser = 'update-user',
+  resetUserPassword = 'reset-user-password',
 }

@@ -484,13 +484,13 @@ export class DemandEditorComponent implements OnInit, OnDestroy {
     if (this.demandCreatorId === this.authService.self.id) return false;
     if (belongUserId === this.authService.self.id) return false;
     if (userId === this.authService.self.id) return false;
-    if (this.selfPermissionList.find(permission => permission.operating === PermissionEnum.updateDemand)) return false;
+    if (this.selfPermissionList.find(permission => permission.operating === PermissionEnum.updateDemand)) return true;
     return true;
   }
 
   public canUplpadDisabled(): boolean {
     if (this.demandCreatorId === this.authService.self.id) return false;
-    if (this.selfPermissionList.find(permission => permission.operating === PermissionEnum.updateDemand)) return false;
+    if (this.selfPermissionList.find(permission => permission.operating === PermissionEnum.updateDemand)) return true;
     return true;
   }
 
