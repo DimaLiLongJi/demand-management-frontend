@@ -29,6 +29,6 @@ export class DemandStatusService {
   }
 
   public updateDemandStatus(id: number, demandStatus?: any): Observable<IResponse> {
-    return this.httpService.put<DemandStatus, IResponse>(`/api/demand-status/${id}`, demandStatus);
+    return this.httpService.post<DemandStatus, IResponse>(`/api/demand-status/${id}`, demandStatus);
   }
 }

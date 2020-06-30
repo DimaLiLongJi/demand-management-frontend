@@ -29,6 +29,6 @@ export class RoleService {
   }
 
   public updateRole(id: number, role?: any): Observable<IResponse> {
-    return this.httpService.put<Role, IResponse>(`/api/role/${id}`, role);
+    return this.httpService.post<Role, IResponse>(`/api/role/${id}`, role);
   }
 }

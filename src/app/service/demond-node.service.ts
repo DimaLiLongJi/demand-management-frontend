@@ -33,6 +33,6 @@ export class DemandNodeService {
   }
 
   public update(id: number, demandNode?: any): Observable<IResponse> {
-    return this.httpService.put<DemandNode, IResponse>(`/api/demand-node/${id}`, demandNode);
+    return this.httpService.post<DemandNode, IResponse>(`/api/demand-node/${id}`, demandNode);
   }
 }

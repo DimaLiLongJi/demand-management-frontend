@@ -28,14 +28,14 @@ export class DemandService {
   }
 
   public updateDemand(id: number, demand?: any): Observable<IResponse> {
-    return this.httpService.put<Demand, IResponse>(`/api/demand/${id}`, demand);
+    return this.httpService.post<Demand, IResponse>(`/api/demand/${id}`, demand);
   }
 
   public passDemand(id: number): Observable<IResponse> {
-    return this.httpService.put<Demand, IResponse>(`/api/demand/pass/${id}`);
+    return this.httpService.post<Demand, IResponse>(`/api/demand/pass/${id}`);
   }
 
   public removeFile(info: { demandId: number, fileId: number }): Observable<IResponse> {
-    return this.httpService.put<typeof info, IResponse>(`/api/demand/deleteFile`, info);
+    return this.httpService.post<typeof info, IResponse>(`/api/demand/deleteFile`, info);
   }
 }

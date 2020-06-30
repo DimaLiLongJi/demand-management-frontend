@@ -29,6 +29,6 @@ export class PermissionService {
   }
 
   public updatePermission(id: number, permission?: any): Observable<IResponse> {
-    return this.httpService.put<Permission, IResponse>(`/api/permission/${id}`, permission);
+    return this.httpService.post<Permission, IResponse>(`/api/permission/${id}`, permission);
   }
 }

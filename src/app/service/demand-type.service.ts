@@ -29,6 +29,6 @@ export class DemandTypeService {
   }
 
   public updateDemandType(id: number, demandType?: any): Observable<IResponse> {
-    return this.httpService.put<DemandType, IResponse>(`/api/demand-type/${id}`, demandType);
+    return this.httpService.post<DemandType, IResponse>(`/api/demand-type/${id}`, demandType);
   }
 }

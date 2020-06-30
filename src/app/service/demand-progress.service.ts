@@ -33,6 +33,6 @@ export class DemandProgressService {
   }
 
   public update(id: number, demandProgress?: any): Observable<IResponse> {
-    return this.httpService.put<DemandProgress, IResponse>(`/api/demand-progress/${id}`, demandProgress);
+    return this.httpService.post<DemandProgress, IResponse>(`/api/demand-progress/${id}`, demandProgress);
   }
 }

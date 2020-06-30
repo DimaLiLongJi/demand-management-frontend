@@ -28,10 +28,10 @@ export class UserService {
   }
 
   public updateUser(id: number, user?: any): Observable<IResponse> {
-    return this.httpService.put<User, IResponse>(`/api/user/${id}`, user);
+    return this.httpService.post<User, IResponse>(`/api/user/${id}`, user);
   }
 
   public updatePassword(id: number, password: string) {
-    return this.httpService.put<{ password: string }, IResponse>(`/api/user/${id}/password`, { password });
+    return this.httpService.post<{ password: string }, IResponse>(`/api/user/${id}/password`, { password });
   }
 }
