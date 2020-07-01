@@ -35,7 +35,7 @@ export class PermissionControllerService {
             nzDuration: 3000,
           });
         }
-      }
+      } else success(permissionList);
     });
   }
 }
