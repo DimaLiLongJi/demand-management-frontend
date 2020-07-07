@@ -162,11 +162,11 @@ export class KanbanComponent implements OnInit, OnDestroy {
                 demandList: []
               };
             });
-            // this.kanbanList.push({
-            //   statusId: 0,
-            //   statusName: '已归档',
-            //   demandList: []
-            // });
+            this.kanbanList.push({
+              statusId: 0,
+              statusName: '已归档',
+              demandList: []
+            });
 
             res.data[0].forEach(demand => {
               let timeout = null;
@@ -178,11 +178,11 @@ export class KanbanComponent implements OnInit, OnDestroy {
 
               // 删除的直接归档
               if (demand.deleteDate) {
-                // this.kanbanList[this.kanbanList.length - 1].demandList.push({
-                //   ...demand,
-                //   timeout,
-                //   canPass: (this.canPassDemandList.indexOf(demand.id) !== -1) ? true : false
-                // });
+                this.kanbanList[this.kanbanList.length - 1].demandList.push({
+                  ...demand,
+                  timeout,
+                  canPass: (this.canPassDemandList.indexOf(demand.id) !== -1) ? true : false
+                });
                 return;
               }
 

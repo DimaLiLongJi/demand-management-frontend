@@ -2,14 +2,12 @@
   <nz-page-header nzTitle="需求看板"></nz-page-header>
   <div class="operating-container">
     <div nz-row>
-      <span class="select-title">模糊搜索：</span>
-      <input class="search-keyword" nz-input [(ngModel)]="searchData.keyword" placeholder="模糊搜索需求名字和详情" />
-      <!-- <span class="select-title">归档状态：</span>
+      <span class="select-title">归档状态：</span>
       <nz-select nzPlaceHolder="选择归档状态" [(ngModel)]="searchData.isOn">
         <nz-option nzLabel="全部状态" nzValue=""></nz-option>
         <nz-option nzLabel="未归档" nzValue="1"></nz-option>
         <nz-option nzLabel="归档" nzValue="2"></nz-option>
-      </nz-select> -->
+      </nz-select>
       <span class="select-title">延期状态：</span>
       <nz-select nzPlaceHolder="选择延期状态" [(ngModel)]="searchData.timeout">
         <nz-option nzLabel="全部状态" nzValue=""></nz-option>
@@ -66,10 +64,10 @@
         <span class="select-title">排期结束时间：</span>
         <nz-range-picker [(ngModel)]="scheduleEndDate"></nz-range-picker>
       </div>
-      <!-- <div nz-row>
+      <div nz-row>
         <span class="select-title">模糊搜索：</span>
         <input class="search-keyword" nz-input [(ngModel)]="searchData.keyword" placeholder="模糊搜索需求名字和详情" />
-      </div> -->
+      </div>
     </div>
     <div nz-row>
       <button nz-button nzType="primary" (click)="getDemandList()">搜索需求</button>
@@ -102,10 +100,6 @@
           <header>{{demand.name}}</header>
           <div class="task-info">
             <div>需求编号: {{demand.id}}</div>
-          </div>
-          <div class="task-info">
-            <span>创建时间：</span>
-            <span>{{demand.createDate | date: "MM/dd/yy"}}</span>
           </div>
           <div class="task-info" [ngClass]="{'warning':demand.timeout === '2', 'danger':demand.timeout === '3', 'finish':demand.timeout === '4'}">
             <span>排期时间：</span>
