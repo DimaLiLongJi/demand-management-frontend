@@ -10,6 +10,7 @@ import { DemandProgressService } from '@/service/demand-progress.service';
 import { DemandNodeService } from '@/service/demond-node.service';
 import { ApproverService } from '@/service/approver.service';
 import { ApproverDetail } from '@/types/approver';
+import { DemandTypeStatusIndexService } from '@/service/demand-type-stataus-index.service';
 import { NzNotificationService, NzMessageService, UploadChangeParam, UploadFile, NzModalService } from 'ng-zorro-antd';
 import { Subscription, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -53,6 +54,8 @@ export class DemandEditorComponent implements OnInit, OnDestroy {
   private getDemandProgress$: Subscription;
   private createDemandNode$: Subscription;
   private updateDemandNode$: Subscription;
+  public getDemandTypeStatusIndex$: Subscription;
+  public passDemand$: Subscription;
 
   public userList: UserDetail[];
   public demandTypeList: DemandTypeDetail[];
@@ -117,9 +120,21 @@ export class DemandEditorComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private modalService: NzModalService,
     @Inject(API_URL) public rootUrl: string,
+    private demandTypeStatusIndexService: DemandTypeStatusIndexService,
   ) {
     this.permissionControllerService.hasPermission(null, (permissionList) => {
       this.selfPermissionList = permissionList;
+    });
+  }
+
+  private resetDemandTypeStatusIndex(typeId: number) {
+    if (this.getDemandTypeStatusIndex$) this.getDemandTypeStatusIndex$.unsubscribe();
+    this.getDemandTypeStatusIndex$ = this.demandTypeStatusIndexService.getByDemandTypeId(typeId).subscribe((res2) => {
+      if (res2.data && res2.data.length > 0 && this.demandStatusList && this.demandStatusList.length > 0) {
+        this.demandStatusList = [...this.demandStatusList.sort((a, b) => {
+          return res2.data.find(da => da.demandStatus.id === a.id).statusIndex - res2.data.find(da => da.demandStatus.id === b.id).statusIndex;
+        })];
+      }
     });
   }
 
@@ -156,6 +171,7 @@ export class DemandEditorComponent implements OnInit, OnDestroy {
     if (this.createDemandNode$) this.createDemandNode$.unsubscribe();
     if (this.updateDemandNode$) this.updateDemandNode$.unsubscribe();
     if (this.getApproverList$) this.getApproverList$.unsubscribe();
+    if (this.passDemand$) this.passDemand$.unsubscribe();
   }
 
   public afterOpen() {
@@ -232,7 +248,8 @@ export class DemandEditorComponent implements OnInit, OnDestroy {
     this.getDemandTypeList$ = this.demandTypeService.getDemandTypeList().subscribe(res => {
       if (res.success) {
         this.demandTypeList = res.data[0] || [];
-        this.demandStatusList = this.demandTypeList && this.demandTypeList[0] ? this.demandTypeList[0].demandStatusList : [];
+        this.resetDemandTypeStatusIndex(this.demandTypeList[0].id);
+        // this.demandStatusList = this.demandTypeList && this.demandTypeList[0] ? this.demandTypeList[0].demandStatusList : [];
       } else this.message.error('获取信息列表失败');
     });
   }
@@ -410,25 +427,25 @@ export class DemandEditorComponent implements OnInit, OnDestroy {
   }
 
   public confirm(type: string) {
+    const approvers: string[] = [];
+    this.approverList.forEach(ap => {
+      // this.validateForm.controls['demandType'].value 是值
+      // this.validateForm.value['demandType'] 得是 this.validateForm.controls['demandType'].enable();才能用
+      if (ap.demandType && ap.demandType.id ===  this.validateForm.controls['demandType'].value && ap.demandStatus && ap.demandStatus.id === this.validateForm.value['demandStatus'] && ap.user) {
+        approvers.push(ap.user.name);
+      }
+    });
     if (type === 'demandStatus') {
-      const approvers: string[] = [];
-      this.approverList.forEach(ap => {
-        // this.validateForm.controls['demandType'].value 是值
-        // this.validateForm.value['demandType'] 得是 this.validateForm.controls['demandType'].enable();才能用
-        if (ap.demandType && ap.demandType.id ===  this.validateForm.controls['demandType'].value && ap.demandStatus && ap.demandStatus.id === this.validateForm.value['demandStatus'] && ap.user) {
-          approvers.push(ap.user.name);
-        }
-      });
+      if (this.demandDetail.isPending === DemandPending.isPending) {
+        this.notification.error('失败', `请先让该【${approvers.toString()}】审核改需求后才可更改状态！`, {
+          nzDuration: 3000,
+        });
+        this.changeControll[type] = false;
+        this.validateForm.controls[type].disable();
+        this.validateForm.controls[type].setValue(this.demandDetail.demandStatus.id);
+        return;
+      }
       if (approvers.length > 0) {
-        if (this.demandDetail.isPending === DemandPending.isPending) {
-          this.notification.error('失败', `请先让该【${approvers.toString()}】审核改需求后才可更改状态！`, {
-            nzDuration: 3000,
-          });
-          this.changeControll[type] = false;
-          this.validateForm.controls[type].disable();
-          this.validateForm.controls[type].setValue(this.demandDetail.demandStatus.id);
-          return;
-        }
         this.modalService.confirm({
           nzTitle: '提交审核',
           nzContent: `该修改将提交给【${approvers.toString()}】审核`,
@@ -437,6 +454,19 @@ export class DemandEditorComponent implements OnInit, OnDestroy {
       } else {
         this.changeDemandDetail(type);
       }
+    // 审核通过或审核拒绝
+    } else if (type === 'pass' || type === 'reject') {
+      // 检查是否是该需求的审核人
+      if (approvers.indexOf(this.authService.self.name) === -1) {
+        this.notification.error('失败', `您暂无审核权限！`, {
+          nzDuration: 3000,
+        });
+        return;
+      }
+      // 通过需求
+      if (type === 'pass') this.passDemand();
+      // 拒绝需求
+      if (type === 'reject') this.rejectDemand();
     } else {
       this.changeDemandDetail(type);
     }
@@ -634,6 +664,48 @@ export class DemandEditorComponent implements OnInit, OnDestroy {
     this.updateDemandNode$ = this.demandNodeService.update(demandNode.id, { detail: demandNode.editValue}).subscribe(res => {
       if (res.success) this.clearDemandNode(demandNode);
       else this.message.error('修改需求检查点失败');
+    });
+  }
+
+  public passDemand() {
+    if (this.passDemand$) this.passDemand$.unsubscribe();
+    this.passDemand$ = this.demandService.passDemand(this.demandId).subscribe(res => {
+      if (res.success) {
+        this.notification.success('成功', '审核需求成功', {
+          nzDuration: 2000,
+        });
+        this.demandDetail.isPending = DemandPending.notPending;
+      } else {
+        this.message.error('审核需求失败');
+      }
+    });
+  }
+
+  public rejectDemand() {
+    const findStatusIndex = this.demandStatusList.findIndex(demandStatus => demandStatus.id === this.demandDetail.demandStatus.id);
+    // 先检查是否有资格
+    if (findStatusIndex <= 0) {
+      this.notification.error('失败', `无法回退该需求的审核`, {
+        nzDuration: 3000,
+      });
+      return;
+    }
+    
+    const updateParams: any = {
+      demandStatus: this.demandStatusList[findStatusIndex - 1].id
+    };
+    if (this.updateDemand$) this.updateDemand$.unsubscribe();
+    this.updateDemand$ = this.demandService.updateDemand(this.demandId, updateParams).subscribe(res => {
+      if (res.success) {
+        this.demandDetail.isPending = DemandPending.notPending;
+        this.notification.success('成功', '拒绝审核需求成功', {
+          nzDuration: 2000,
+        });
+      } else {
+        this.notification.error('失败', `拒绝审核需求失败`, {
+          nzDuration: 3000,
+        });
+      }
     });
   }
 }

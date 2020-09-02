@@ -146,6 +146,8 @@
         <nz-form-label [nzSm]="4" [nzXs]="24">审核状态</nz-form-label>
         <nz-form-control [nzSm]="18" [nzXs]="24">
           <span *ngIf="demandDetail" [ngStyle]="{'color':demandDetail.isPending === '2' ? '#e62412' : 'rgba(0, 0, 0, 0.85)'}">{{demandDetail.isPending | demandIsPending}}</span>
+          <button style="margin-left: 5px;" *ngIf="demandDetail && demandDetail.isPending === '2'" nz-button nzType="danger" nzSize="small" (click)="confirm('pass')">审核通过</button>
+          <button style="margin-left: 5px;" *ngIf="demandDetail && demandDetail.isPending === '2'" nz-button nzType="danger" nzSize="small" (click)="confirm('reject')">审核拒绝</button>
         </nz-form-control>
       </nz-form-item>
       <nz-form-item class="ant-form-item ant-row">

@@ -377,8 +377,12 @@ export class KanbanComponent implements OnInit, OnDestroy {
         demandStatus: statusId
       };
       // 如果deleteDate存在 则是先解除归档
-      if (demand.deleteDate) updateParams.deleteDate = null;
+      if (demand.deleteDate) {
+        updateParams.isOn = '1';
+        updateParams.deleteDate = null;
+      }
       this.spinControllerService.update(true);
+      if (this.updateDemand$) this.updateDemand$.unsubscribe();
       this.updateDemand$ = this.demandService.updateDemand(demand.id, updateParams).subscribe(res => {
         if (res.success) {
           this.notification.success('成功', '更新需求状态成功', {
@@ -404,6 +408,40 @@ export class KanbanComponent implements OnInit, OnDestroy {
       } else {
         this.message.error('审核需求失败');
       }
+    });
+  }
+
+  public rejectDemand(demand: DemandDetail) {
+    if (!demand.canPass) {
+      this.notification.error('失败', `无法回退该需求的审核`, {
+        nzDuration: 3000,
+      });
+      return;
+    }
+    const findStatusIndex = this.kanbanList.findIndex(kb => kb.statusId === demand.demandStatus.id);
+    if (findStatusIndex <= 0) {
+      this.notification.error('失败', `无法回退该需求的审核`, {
+        nzDuration: 3000,
+      });
+      return;
+    }
+    const returnDemandStatusId = this.kanbanList[findStatusIndex - 1].statusId;
+    const updateParams: any = {
+      demandStatus: returnDemandStatusId
+    };
+    if (this.updateDemand$) this.updateDemand$.unsubscribe();
+    this.updateDemand$ = this.demandService.updateDemand(demand.id, updateParams).subscribe(res => {
+      if (res.success) {
+          this.notification.success('成功', '更新需求状态成功', {
+            nzDuration: 2000,
+          });
+          this.getDemandList();
+        } else {
+          this.notification.error('失败', `更新需求状态失败`, {
+            nzDuration: 3000,
+          });
+        }
+      this.spinControllerService.update(false);
     });
   }
 }

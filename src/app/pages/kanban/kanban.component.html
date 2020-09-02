@@ -120,7 +120,8 @@
         </div>
         <button *ngIf="!demand.deleteDate" nz-button nzType="danger" nzSize="small" (click)="tryDeleteDemand(demand, true)">归档</button>
         <button *ngIf="demand.deleteDate" nz-button nzType="primary" nzSize="small" (click)="tryDeleteDemand(demand, false)">未归档</button>
-        <button style="margin-left: 5px;" *ngIf="demand.canPass" nz-button nzType="danger" nzSize="small" (click)="passDemand(demand.id)">通过审核</button>
+        <button style="margin-left: 5px;" *ngIf="demand.canPass" nz-button nzType="danger" nzSize="small" (click)="passDemand(demand.id)">审核通过</button>
+        <button style="margin-left: 5px;" *ngIf="demand.canPass" nz-button nzType="danger" nzSize="small" (click)="rejectDemand(demand)">审核拒绝</button>
         <button style="margin-left: 5px;" nz-button nzType="primary" nzSize="small" (click)="openLog(demand.id)">操作记录</button>
       </div>
     </div>
