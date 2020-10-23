@@ -111,7 +111,11 @@
           </div>
           <div class="task-info">
             <span>创建者：</span>
-            <span>{{demand.creator.name}}</span>
+            <span>{{demand.creator?.name}}</span>
+          </div>
+          <div class="task-info">
+            <span>需求人：</span>
+            <span>{{demand.proposer?.name}}</span>
           </div>
           <div class="task-info" [ngClass]="{'danger':demand.isPending === '2'}">
             <span>审核状态：</span>
