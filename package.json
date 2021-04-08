@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --base-href /demand-manager/pages --deploy-url http://localhost:4200/",
-    "build": "ng build --prod --base-href /hlj/global/demand-manager/pages --deploy-url /hlj/global/demand-manager/pages/",
+    "build": "ng build --prod --base-href /demand-manager/pages --deploy-url /demand-manager/pages/",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
